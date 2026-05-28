@@ -54,6 +54,10 @@
       "src": "/v2-diagnostic",
       "dest": "/v2-diagnostic.html"
     },
+    {
+      "src": "/game",
+      "dest": "/game.html"
+    },
     { "handle": "filesystem" },
     {
       "src": "/(.*)",

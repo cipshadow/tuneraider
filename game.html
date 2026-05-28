@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bad Bunny Chiptune Quiz - Game Boy Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      --bg-dark: #0f380f;
+      --bg-panel: #306230;
+      --gb-green: #9bbc0f;
+      --gb-light-green: #8bac0f;
+      --gb-cream: #e0f8d0;
+      --text: #9bbc0f;
+      --text-dim: #306230;
+
+      background: var(--bg-dark);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      line-height: 1.4;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 4px
+      );
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      text-shadow: 2px 2px 0 #0a280a;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 0.65rem;
+      color: var(--gb-light-green);
+      letter-spacing: 1px;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 4px solid var(--gb-light-green);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--gb-light-green);
+      padding-bottom: 0.5rem;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    button {
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-green);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.1s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+    }
+
+    button:active {
+      transform: translate(1px, 1px);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      background: var(--bg-dark);
+      border: 4px solid var(--gb-green);
+    }
+
+    .btn-primary:hover {
+      background: rgba(155, 188, 15, 0.2);
+    }
+
+    .blink {
+      animation: blink 0.6s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hud-item {
+      background: var(--bg-dark);
+      border: 2px solid var(--gb-light-green);
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    .hud-label {
+      font-size: 0.55rem;
+      color: var(--gb-light-green);
+      margin-bottom: 0.3rem;
+    }
+
+    .hud-value {
+      font-size: 1rem;
+      color: var(--gb-cream);
+    }
+
+    .timer-wrap {
+      margin: 1rem 0;
+    }
+
+    .timer-bar-wrap {
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-light-green);
+      height: 20px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .timer-bar {
+      height: 100%;
+      background: var(--gb-green);
+      width: 100%;
+      transition: width linear;
+    }
+
+    .timer-text {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--gb-light-green);
+    }
+
+    .now-playing {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 2rem;
+      position: relative;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .now-playing-base {
+      animation: pulse 0.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    .floating-note {
+      position: absolute;
+      font-size: 1.2rem;
+      animation: float-up 2.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes float-up {
+      0% {
+        opacity: 1;
+        transform: translateY(0) translateX(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px) translateX(var(--offset-x)) scale(0.3);
+      }
+    }
+
+    .current-points-display {
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-green);
+      padding: 1rem;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .current-points-label {
+      font-size: 0.6rem;
+      color: var(--gb-light-green);
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+
+    .current-points-value {
+      font-size: 1.2rem;
+      color: var(--gb-cream);
+      font-weight: bold;
+    }
+
+    .game-instruction {
+      text-align: center;
+      font-size: 0.6rem;
+      color: var(--gb-light-green);
+      margin: 1rem 0;
+      line-height: 1.6;
+    }
+
+    .arcade-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    /* Orbital motion — buttons drift gently, staying near center */
+    @keyframes orbit1 {
+      0%, 100% { transform: translate(0, 0); z-index: 2; }
+      12% { transform: translate(50px, -30px); z-index: 1; }
+      25% { transform: translate(70px, 10px); z-index: 3; }
+      37% { transform: translate(50px, 50px); z-index: 2; }
+      50% { transform: translate(0, 60px); z-index: 1; }
+      62% { transform: translate(-60px, 40px); z-index: 3; }
+      75% { transform: translate(-70px, -20px); z-index: 2; }
+      87% { transform: translate(-40px, -50px); z-index: 1; }
+    }
+
+    @keyframes orbit2 {
+      0%, 100% { transform: translate(0, 0); z-index: 1; }
+      12% { transform: translate(-45px, -40px); z-index: 2; }
+      25% { transform: translate(-65px, 15px); z-index: 3; }
+      37% { transform: translate(-50px, 55px); z-index: 1; }
+      50% { transform: translate(10px, 65px); z-index: 3; }
+      62% { transform: translate(65px, 35px); z-index: 2; }
+      75% { transform: translate(60px, -25px); z-index: 1; }
+      87% { transform: translate(30px, -60px); z-index: 3; }
+    }
+
+    @keyframes orbit3 {
+      0%, 100% { transform: translate(0, 0); z-index: 3; }
+      12% { transform: translate(55px, 25px); z-index: 2; }
+      25% { transform: translate(70px, -30px); z-index: 1; }
+      37% { transform: translate(35px, -55px); z-index: 3; }
+      50% { transform: translate(-20px, -60px); z-index: 2; }
+      62% { transform: translate(-70px, -10px); z-index: 1; }
+      75% { transform: translate(-55px, 45px); z-index: 3; }
+      87% { transform: translate(-10px, 55px); z-index: 2; }
+    }
+
+    @keyframes orbit4 {
+      0%, 100% { transform: translate(0, 0); z-index: 1; }
+      12% { transform: translate(-50px, 35px); z-index: 3; }
+      25% { transform: translate(-60px, -40px); z-index: 2; }
+      37% { transform: translate(-20px, -60px); z-index: 1; }
+      50% { transform: translate(45px, -50px); z-index: 3; }
+      62% { transform: translate(65px, 20px); z-index: 2; }
+      75% { transform: translate(40px, 55px); z-index: 1; }
+      87% { transform: translate(-30px, 45px); z-index: 3; }
+    }
+
+    @keyframes orbit5 {
+      0%, 100% { transform: translate(0, 0); z-index: 2; }
+      12% { transform: translate(45px, 45px); z-index: 1; }
+      25% { transform: translate(20px, 65px); z-index: 3; }
+      37% { transform: translate(-35px, 50px); z-index: 2; }
+      50% { transform: translate(-70px, 15px); z-index: 1; }
+      62% { transform: translate(-60px, -35px); z-index: 3; }
+      75% { transform: translate(-20px, -55px); z-index: 2; }
+      87% { transform: translate(50px, -45px); z-index: 1; }
+    }
+
+    @keyframes orbit6 {
+      0%, 100% { transform: translate(0, 0); z-index: 3; }
+      12% { transform: translate(-60px, -25px); z-index: 2; }
+      25% { transform: translate(-35px, -50px); z-index: 1; }
+      37% { transform: translate(30px, -55px); z-index: 3; }
+      50% { transform: translate(70px, -20px); z-index: 2; }
+      62% { transform: translate(65px, 40px); z-index: 1; }
+      75% { transform: translate(20px, 60px); z-index: 3; }
+      87% { transform: translate(-50px, 30px); z-index: 2; }
+    }
+
+    .answer-btn {
+      padding: 1.5rem 1rem;
+      font-size: 0.65rem;
+      border: 3px solid var(--gb-green);
+      background: var(--bg-dark);
+      color: var(--gb-green);
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      letter-spacing: 0.5px;
+      text-align: center;
+      word-wrap: break-word;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .answer-btn:hover {
+      background: rgba(155, 188, 15, 0.2);
+    }
+
+    .answer-btn:active {
+      transform: scale(0.98);
+    }
+
+    .answer-btn.correct {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+      border-color: var(--gb-cream);
+      animation: none !important;
+    }
+
+    .answer-btn.wrong {
+      background: #3a0a0a;
+      border-color: #ff4444;
+      animation: none !important;
+    }
+
+    .answer-btn:nth-child(1) { animation: orbit1 8s infinite ease-in-out; }
+    .answer-btn:nth-child(2) { animation: orbit2 8.8s infinite ease-in-out; }
+    .answer-btn:nth-child(3) { animation: orbit3 7.8s infinite ease-in-out; }
+    .answer-btn:nth-child(4) { animation: orbit4 8.4s infinite ease-in-out; }
+    .answer-btn:nth-child(5) { animation: orbit5 7.4s infinite ease-in-out; }
+    .answer-btn:nth-child(6) { animation: orbit6 9s infinite ease-in-out; }
+
+    .volume-control {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    .volume-btn {
+      background: var(--bg-panel);
+      border: 2px solid var(--gb-green);
+      color: var(--gb-green);
+      font-size: 0.8rem;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    .volume-btn:hover {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+    }
+
+    .volume-slider-wrap {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+      background: var(--bg-panel);
+      border: 2px solid var(--gb-green);
+      padding: 0.3rem 0.5rem;
+    }
+
+    .volume-slider {
+      width: 80px;
+      height: 8px;
+      cursor: pointer;
+      background: var(--bg-dark);
+      border: 1px solid var(--gb-light-green);
+      accent-color: var(--gb-cream);
+    }
+
+    .volume-label {
+      font-size: 0.6rem;
+      color: var(--gb-green);
+      width: 20px;
+    }
+
+    .result-screen {
+      text-align: center;
+    }
+
+    .result-icon {
+      font-size: 3rem;
+      margin: 1rem 0;
+      animation: bounce 0.6s;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .result-text {
+      font-size: 0.8rem;
+      margin: 1rem 0;
+      color: var(--gb-cream);
+    }
+
+    .score-display {
+      font-size: 1.2rem;
+      color: var(--gb-cream);
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    .input-group {
+      margin: 1.5rem 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.7rem;
+      margin-bottom: 0.5rem;
+      color: var(--gb-light-green);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-green);
+      color: var(--gb-green);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--gb-cream);
+    }
+
+    .leaderboard {
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-light-green);
+    }
+
+    .leaderboard ol {
+      list-style: none;
+      padding: 0;
+    }
+
+    .leaderboard li {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-bottom: 2px solid var(--bg-panel);
+      font-size: 0.7rem;
+      align-items: center;
+    }
+
+    .leaderboard li:nth-child(even) {
+      background: rgba(155, 188, 15, 0.07);
+    }
+
+    .leaderboard li:last-child {
+      border-bottom: none;
+    }
+
+    .rank-badge {
+      font-size: 1.2rem;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .leaderboard-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .leaderboard-score {
+      text-align: right;
+      color: var(--gb-cream);
+      font-weight: bold;
+    }
+
+    .song-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .song-card {
+      background: var(--bg-dark);
+      border: 2px solid var(--gb-light-green);
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .song-card:hover {
+      background: rgba(155, 188, 15, 0.15);
+      border-color: var(--gb-green);
+      transform: translateY(-2px);
+    }
+
+    .song-card .cover {
+      width: 100%;
+      aspect-ratio: 1;
+      background: rgba(155, 188, 15, 0.12);
+      border: 1px solid var(--gb-light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+    }
+
+    .song-card .title {
+      font-size: 0.7rem;
+      color: var(--gb-green);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .song-card .artist {
+      font-size: 0.55rem;
+      color: var(--gb-light-green);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .button-row button {
+      flex: 1;
+    }
+
+    .logo-small {
+      font-size: 0.75rem;
+      color: var(--gb-light-green);
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--gb-light-green);
+    }
+
+    .credits-link {
+      font-size: 0.6rem;
+      color: var(--gb-light-green);
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+      border: 1px solid var(--gb-light-green);
+      padding: 0.3rem 0.5rem;
+    }
+
+    .credits-link:hover {
+      background: rgba(155, 188, 15, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎮 CHIPTUNE QUIZ</h1>
+      <p class="subtitle">Bad Bunny Edition</p>
+    </header>
+
+    <!-- HOME SCREEN -->
+    <div id="screen-home" class="screen active">
+      <div class="panel">
+        <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gb-light-green); font-size: 0.75rem;">
+          <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
+        </p>
+        <button class="btn-primary" id="btn-play-game">▶ PLAY GAME</button>
+        <button class="btn-primary" id="btn-listen">🎧 LISTEN MODE</button>
+      </div>
+
+      <div class="panel">
+        <h2>TOP SCORES</h2>
+        <div id="leaderboard-preview">
+          <p style="text-align: center; color: var(--gb-light-green); font-size: 0.65rem;">Loading...</p>
+        </div>
+      </div>
+
+      <div class="logo-small">
+        Game Boy Synth • Play & Score
+        <br/>
+        <a href="MIDI_CREDITS.md" class="credits-link" target="_blank">MIDI Credits</a>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="screen-game" class="screen">
+      <div class="panel" style="position: relative;">
+        <div class="volume-control">
+          <button class="volume-btn" id="btn-vol-down">−</button>
+          <div class="volume-slider-wrap">
+            <span class="volume-label" id="vol-label">70%</span>
+            <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="70">
+          </div>
+          <button class="volume-btn" id="btn-vol-up">+</button>
+        </div>
+
+        <div class="hud">
+          <div class="hud-item">
+            <div class="hud-label">ROUND</div>
+            <div class="hud-value"><span id="round-num">1</span>/<span id="round-total">9</span></div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">SCORE</div>
+            <div class="hud-value"><span id="game-score">0</span></div>
+          </div>
+        </div>
+
+        <div id="now-playing" class="now-playing">
+          <div class="now-playing-base">♪ ♪ ♪</div>
+        </div>
+
+        <div class="current-points-display">
+          <div class="current-points-label">CURRENT POINTS</div>
+          <div class="current-points-value"><span id="live-points">1000</span></div>
+        </div>
+
+        <div class="game-instruction">
+          THE FASTER YOU<br/>SELECT THE<br/>MORE POINTS!<br/>
+          <span style="font-size: 0.55rem;">1s = 1000pts • 15s = 500pts • 30s = 0pts</span>
+        </div>
+
+        <div class="timer-wrap">
+          <div class="timer-bar-wrap">
+            <div id="timer-bar" class="timer-bar"></div>
+          </div>
+          <div class="timer-text"><span id="timer-text">0s</span></div>
+        </div>
+
+        <div id="arcade-panel" class="arcade-panel"></div>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="screen-result" class="screen">
+      <div class="panel result-screen">
+        <div id="result-icon" class="result-icon">✓</div>
+        <div id="result-text" class="result-text">Correct!</div>
+        <div class="score-display">
+          +<span id="round-points">1000</span> pts
+          <div style="font-size: 0.7rem; color: var(--gb-light-green); margin-top: 0.5rem;">
+            Total: <span id="total-score">0</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 1.5rem 0; font-size: 0.65rem; color: var(--gb-light-green);">
+          <p id="now-playing-song" style="margin-bottom: 0.5rem;">♪ Playing...</p>
+          <p style="font-size: 0.6rem;">
+            ▶ Still listening? No problem!<br/>
+            Click when ready for the next round.
+          </p>
+        </div>
+
+        <button class="btn-primary" id="btn-next" style="margin-top: 1rem;">→ NEXT ROUND</button>
+      </div>
+    </div>
+
+    <!-- GAMEOVER SCREEN -->
+    <div id="screen-gameover" class="screen">
+      <div class="panel">
+        <h2>GAME OVER</h2>
+
+        <div style="text-align: center; margin: 1.5rem 0;">
+          <div style="font-size: 0.75rem; color: var(--gb-light-green); margin-bottom: 0.5rem;">FINAL SCORE</div>
+          <div style="font-size: 1.5rem; color: var(--gb-cream);">
+            <span id="final-score">0</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="player-name">YOUR NAME:</label>
+          <input type="text" id="player-name" maxlength="20" placeholder="Enter name...">
+        </div>
+
+        <button class="btn-primary" id="btn-submit-score">SUBMIT SCORE</button>
+
+        <div class="button-row" style="margin-top: 1rem;">
+          <button id="btn-play-again">PLAY AGAIN</button>
+          <button id="btn-view-lb">LEADERBOARD</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD SCREEN -->
+    <div id="screen-leaderboard" class="screen">
+      <div class="panel">
+        <h2>LEADERBOARD</h2>
+        <div id="leaderboard-main" class="leaderboard">
+          <ol id="lb-list">
+            <li style="text-align: center; color: var(--gb-light-green); padding: 1rem;">Loading...</li>
+          </ol>
+        </div>
+
+        <div class="button-row" style="margin-top: 1.5rem;">
+          <button id="btn-lb-back">← BACK</button>
+          <button id="btn-lb-play">PLAY AGAIN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTEN MODE SCREEN -->
+    <div id="screen-listen" class="screen">
+      <div class="panel">
+        <h2>LISTEN MODE</h2>
+        <div id="listen-grid" class="song-grid"></div>
+        <button class="btn-primary" id="btn-listen-back" style="margin-top: 1rem;">← BACK TO MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { GameBoyPlayer } from './src-v2/core/GameBoyPlayer.ts';
+    import { SONGS } from './src-v2/data/songs.ts';
+
+    const state = {
+      songs: [...SONGS],
+      shuffled: [],
+      round: 0,
+      score: 0,
+      timerStart: 0,
+      snippetTimeout: null,
+      isAnswered: false,
+    };
+
+    const player = new GameBoyPlayer();
+    let currentSong = null;
+    let currentMidiBuffer = null;
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const screen = document.getElementById(`screen-${id}`);
+      if (screen) screen.classList.add('active');
+    }
+
+    let timerInterval = null;
+    let livePointsRafId = null;
+
+    function updateTimerDisplay() {
+      const elapsed = (Date.now() - state.timerStart) / 1000;
+      const clamped = Math.min(elapsed, 30);
+      document.getElementById('timer-text').textContent = Math.ceil(clamped) + 's';
+
+      const progressPercent = (clamped / 30) * 100;
+      document.getElementById('timer-bar').style.width = progressPercent + '%';
+    }
+
+    function updateLivePoints() {
+      const elapsed = (Date.now() - state.timerStart) / 1000;
+      const clamped = Math.min(Math.max(0, elapsed), 30);
+      const livePoints = Math.max(0, Math.round(1000 * (1 - clamped / 30)));
+      document.getElementById('live-points').textContent = livePoints;
+      livePointsRafId = requestAnimationFrame(updateLivePoints);
+    }
+
+    let notesInterval = null;
+    function createFloatingNote() {
+      const nowPlaying = document.getElementById('now-playing');
+      if (!nowPlaying) return;
+
+      const note = document.createElement('div');
+      note.className = 'floating-note';
+      const notes = ['♪', '♫', '♬'];
+      note.textContent = notes[Math.floor(Math.random() * notes.length)];
+      const offsetX = (Math.random() - 0.5) * 60;
+      note.style.setProperty('--offset-x', offsetX + 'px');
+      nowPlaying.appendChild(note);
+
+      setTimeout(() => note.remove(), 2500);
+    }
+
+    function shuffle(arr) {
+      const result = [...arr];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    async function loadLeaderboardPreview() {
+      try {
+        const res = await fetch('/api/scores');
+        const scores = await res.json();
+        const top3 = scores.slice(0, 3);
+        const html = top3.length > 0
+          ? top3.map((s, i) => `<div style="padding: 0.5rem 0; font-size: 0.7rem; border-bottom: 1px solid var(--bg-dark);">
+              <span style="color: var(--gb-cream);">${['🥇', '🥈', '🥉'][i]} ${s.name}</span>
+              <span style="float: right; color: var(--gb-green);">${s.score}</span>
+            </div>`).join('')
+          : '<p style="text-align: center; color: var(--gb-light-green); font-size: 0.65rem;">No scores yet</p>';
+        document.getElementById('leaderboard-preview').innerHTML = html;
+      } catch (err) {
+        console.error('Leaderboard preview failed:', err);
+      }
+    }
+
+    async function loadFullLeaderboard() {
+      try {
+        const res = await fetch('/api/scores');
+        const scores = await res.json();
+        const list = document.getElementById('lb-list');
+        if (scores.length === 0) {
+          list.innerHTML = '<li style="text-align: center; color: var(--gb-light-green); padding: 1rem;">No scores yet</li>';
+          return;
+        }
+        list.innerHTML = scores.map(s => `
+          <li>
+            <span class="rank-badge">${['🥇', '🥈', '🥉'][s.rank - 1] || s.rank + '.'}</span>
+            <span class="leaderboard-name">${s.name}</span>
+            <span class="leaderboard-score">${s.score}</span>
+          </li>
+        `).join('');
+      } catch (err) {
+        console.error('Leaderboard load failed:', err);
+      }
+    }
+
+    async function startGame() {
+      state.shuffled = shuffle(state.songs);
+      state.round = 0;
+      state.score = 0;
+      startRound(0);
+    }
+
+    async function startRound(index) {
+      if (index >= state.shuffled.length) {
+        showScreen('gameover');
+        document.getElementById('final-score').textContent = state.score;
+        return;
+      }
+
+      state.round = index;
+      state.isAnswered = false;
+      currentSong = state.shuffled[index];
+
+      showScreen('game');
+      document.getElementById('round-num').textContent = index + 1;
+      document.getElementById('round-total').textContent = state.shuffled.length;
+      document.getElementById('game-score').textContent = state.score;
+
+      try {
+        const res = await fetch(currentSong.midiUrl);
+        currentMidiBuffer = await res.arrayBuffer();
+
+        await player.resume();
+        state.timerStart = Date.now();
+
+        // Start timer display
+        timerInterval = setInterval(updateTimerDisplay, 100);
+        updateTimerDisplay();
+
+        // Start live points update
+        if (livePointsRafId) cancelAnimationFrame(livePointsRafId);
+        updateLivePoints();
+
+        // Start floating notes animation
+        if (notesInterval) clearInterval(notesInterval);
+        notesInterval = setInterval(createFloatingNote, 300);
+
+        // Play MIDI (full duration)
+        await player.playMIDI(currentMidiBuffer);
+
+        // Auto-move to next round after song ends
+        const info = player.analyzeMIDI(currentMidiBuffer);
+        state.snippetTimeout = setTimeout(() => {
+          if (!state.isAnswered) {
+            selectAnswer(null);
+          }
+        }, (info.duration + 0.5) * 1000);
+
+      } catch (err) {
+        console.error('Round start failed:', err);
+      }
+    }
+
+    function selectAnswer(btn) {
+      if (state.isAnswered) return;
+      state.isAnswered = true;
+
+      if (state.snippetTimeout) clearTimeout(state.snippetTimeout);
+      clearInterval(timerInterval);
+      if (livePointsRafId) cancelAnimationFrame(livePointsRafId);
+      if (notesInterval) clearInterval(notesInterval);
+
+      const elapsed = (Date.now() - state.timerStart) / 1000;
+      const clamped = Math.min(Math.max(0, elapsed), 30);
+
+      let isCorrect = false;
+      if (btn) {
+        const title = btn.dataset.title;
+        isCorrect = title === currentSong.title;
+      }
+
+      // Score: faster = more points. At 1s = 1000, at 30s = 0
+      const points = isCorrect
+        ? Math.max(0, Math.round(1000 * (1 - clamped / 30)))
+        : 0;
+
+      if (btn) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        setTimeout(() => {
+          state.score += points;
+          showResult(isCorrect, points, currentSong.title, clamped);
+        }, 600);
+      } else {
+        // Timed out
+        state.score += 0;
+        showResult(false, 0, currentSong.title, 30);
+      }
+    }
+
+    function showResult(isCorrect, points, correctTitle, elapsed) {
+      showScreen('result');
+      document.getElementById('result-icon').textContent = isCorrect ? '✓' : 'TIME!';
+      document.getElementById('result-icon').style.color = isCorrect ? 'var(--gb-cream)' : '#ff4444';
+      document.getElementById('result-text').textContent = isCorrect ? 'CORRECT!' : 'TIME\'S UP!';
+      document.getElementById('round-points').textContent = points;
+      document.getElementById('total-score').textContent = state.score;
+      document.getElementById('now-playing-song').textContent = `♪ ${correctTitle} ♪`;
+    }
+
+    function setupListenMode() {
+      const grid = document.getElementById('listen-grid');
+      grid.innerHTML = state.songs.map(song => `
+        <div class="song-card" data-url="${song.midiUrl}">
+          <div class="cover">🎮</div>
+          <div class="title">${song.title}</div>
+          <div class="artist">${song.artist}</div>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.song-card').forEach(card => {
+        card.addEventListener('click', async () => {
+          try {
+            const res = await fetch(card.dataset.url);
+            const buf = await res.arrayBuffer();
+            await player.resume();
+            await player.playMIDI(buf);
+          } catch (err) {
+            console.error('Listen play failed:', err);
+          }
+        });
+      });
+    }
+
+    async function submitScore() {
+      const name = document.getElementById('player-name').value.trim();
+      if (!name) {
+        alert('Enter your name!');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/scores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, score: state.score }),
+        });
+        const data = await res.json();
+        if (data.error) {
+          alert('Error: ' + data.error);
+          return;
+        }
+
+        alert(`Rank: ${data.rank} / ${data.total}`);
+        loadFullLeaderboard();
+        showScreen('leaderboard');
+      } catch (err) {
+        console.error('Submit failed:', err);
+        alert('Failed to submit score');
+      }
+    }
+
+    // Event listeners
+    document.getElementById('btn-play-game').addEventListener('click', startGame);
+    document.getElementById('btn-listen').addEventListener('click', () => {
+      setupListenMode();
+      showScreen('listen');
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+      player.stop();
+      startRound(state.round + 1);
+    });
+
+    document.getElementById('btn-submit-score').addEventListener('click', submitScore);
+    document.getElementById('btn-play-again').addEventListener('click', startGame);
+    document.getElementById('btn-view-lb').addEventListener('click', () => {
+      loadFullLeaderboard();
+      showScreen('leaderboard');
+    });
+
+    document.getElementById('btn-lb-back').addEventListener('click', () => showScreen('home'));
+    document.getElementById('btn-lb-play').addEventListener('click', startGame);
+
+    document.getElementById('btn-listen-back').addEventListener('click', () => {
+      player.stop();
+      showScreen('home');
+    });
+
+    function revealAnswers() {
+      const arcadePanel = document.getElementById('arcade-panel');
+
+      // Pick 6 random songs from the 9 available (can repeat if needed)
+      const shuffledSongs = shuffle(state.songs).slice(0, 6);
+
+      arcadePanel.innerHTML = shuffledSongs.map(song => `
+        <button class="answer-btn" data-title="${song.title}">
+          ${song.title}
+        </button>
+      `).join('');
+
+      arcadePanel.querySelectorAll('.answer-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectAnswer(btn));
+      });
+    }
+
+    // Volume control
+    const volumeSlider = document.getElementById('volume-slider');
+    const volLabel = document.getElementById('vol-label');
+    const btnVolDown = document.getElementById('btn-vol-down');
+    const btnVolUp = document.getElementById('btn-vol-up');
+
+    function updateVolume() {
+      const vol = parseFloat(volumeSlider.value);
+      player.setVolume(vol / 100);
+      volLabel.textContent = Math.round(vol) + '%';
+    }
+
+    volumeSlider.addEventListener('input', updateVolume);
+    btnVolDown.addEventListener('click', () => {
+      volumeSlider.value = Math.max(0, parseFloat(volumeSlider.value) - 10);
+      updateVolume();
+    });
+    btnVolUp.addEventListener('click', () => {
+      volumeSlider.value = Math.min(100, parseFloat(volumeSlider.value) + 10);
+      updateVolume();
+    });
+
+    // Show answer buttons on screen load
+    setTimeout(() => {
+      revealAnswers();
+    }, 500);
+
+    // Init
+    loadLeaderboardPreview();
+    setupListenMode();
+  </script>
+</body>
+</html>

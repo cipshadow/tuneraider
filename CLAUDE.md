@@ -1,47 +1,129 @@
-# MOTIF — Aims, Scope, and Guidelines (for AI agents)
+# TUNERAIDER — Game Boy Chiptune Quiz
 
-## Aims (what we’re trying to achieve)
-- **Primary aim (MVP)**: Let a user search any song name, find real MIDI files online, **load one**, and **play it back in-browser** in a way that feels like a proper MIDI performance.
-- **Secondary aim (next step)**: From the same MIDI, generate a **similar-but-different** “Motif” version and play that.
-- **Future aim (later)**: Add stylistic transforms (“more ominous”, “dance/remix”), controls, and improved musical intelligence.
+**GitHub**: https://github.com/cipshadow/tuneraider  
+**Live**: [localhost:3000/game.html](http://localhost:3000/game.html)  
+**Creator**: cipshadow  
 
-## Scope (what is in-bounds right now)
-- **Search + ranking** of MIDI candidates from multiple sources
-- **Fetch + validate + cache** MIDI bytes via the backend (with SSRF protection)
-- **Parse** MIDI and show basic metadata (duration, track count, issues) - now deterministic
-- **Playback of the fetched MIDI** (this is the current priority)
-- **Error handling**: Clear user feedback when upstream services fail
-- Keep Motif generation working, but don't block MVP playback on it
+## Project Overview
 
-## Non-scope (avoid for now)
-- Perfect matching/similarity, chord/key analysis, advanced arrangement
-- Big infra (DB/CDN/monitoring/analytics), large refactors
-- New features unrelated to search/fetch/parse/playback reliability
+A **dexterity-based chiptune quiz game** that converts Bad Bunny MIDI files into Game Boy 8-bit audio in the browser. Players identify songs by ear, earning points based on speed. Global leaderboard powered by Redis.
 
-## Guidelines (how to work in this repo)
-- **Bias toward real MIDI**: don't silently replace real results with synthetic/mock in the default user path.
-- **Make degradation explicit**: if mock/synthetic is used, it must be clearly indicated (UI/logs).
-- **Keep changes incremental**: prioritize reliable end-to-end playback over architecture rewrites.
-- **Respect browser audio constraints**: playback must work with autoplay policies (user gesture → resume AudioContext).
-- **Add practical observability**: when fixing issues, add minimal logs/errors that explain which step failed (search vs fetch vs parse vs playback).
-- **Security first**: All URL fetches must validate targets (SSRF protection is enabled). Never bypass security checks.
-- **User-friendly errors**: When upstream services fail, return clear, actionable error messages (not generic "something went wrong").
-- **Deterministic behavior**: Parsing and metadata extraction should be stable/reproducible across runs (no random placeholders).
-- **Definition of done for any PR**:
-  - Search returns results for common queries (or clear error if source is down)
-  - Selecting a result fetches bytes successfully (or shows a clear error)
-  - Playback starts/stops reliably without breaking subsequent plays
-  - Security validations pass (no SSRF vulnerabilities introduced)
+## Tech Stack
 
-## "Done means demo-able"
-A change is successful if someone can:
-- search "Hotel California"
-- select a result
-- hit Play and hear it
-- hit Stop and try another result
+- **Frontend**: Vite (TypeScript), v2.html (Game Boy player)
+- **Synthesis**: `src-v2/core/GameBoyPlayer.ts` — 8-channel APU (4 pulse, 2 wave, 2 noise)
+- **Backend**: Express (Node.ts), Redis/Vercel KV leaderboard
+- **Audio**: Web Audio API, @tonejs/midi parsing
+- **Design**: Press Start 2P font, Game Boy palette (green #9bbc0f, dark #0f380f)
 
-## Recent Improvements (2026-02-05)
-- **SSRF Protection**: All MIDI fetch endpoints now validate URLs and block private/local targets (localhost, 10.x, 192.168.x, 169.254.x, etc.)
-- **Deterministic MIDI Parsing**: Replaced random placeholder metadata with real track analysis (stable note counts, tempo, time signatures)
-- **BitMidi Outage UX**: When upstream MIDI sources fail, users see clear retry messages instead of silent failures (returns 503 with actionable message)
-- **Verified**: All changes tested and merged to master (commits 5e81227, 686c961)
+## Game Mechanics
+
+1. **Arcade Button Panel** (2×3 grid)
+   - 6 random buttons from 9-song library selected per round
+   - Buttons **swap positions** continuously with staggered animations
+   - Players click the correct song button
+
+2. **Scoring**
+   - Speed-based: `points = Math.max(0, 1000 * (1 - elapsed/30))`
+   - Max 1000 pts at 1 second
+   - 0 pts if no selection by 30s or wrong answer
+   - 9 rounds (9 songs) = max 9000 pts
+
+3. **Features**
+   - Volume control (top-right, 0-100%)
+   - Global leaderboard (Redis/Vercel KV)
+   - Listen mode (browse all songs anytime)
+   - Local dev fallback (in-memory storage)
+
+## Library (9 Bad Bunny Tracks)
+
+All full-length MIDIs in `/public/midi/`:
+1. DtMF (1:23)
+2. Tití Me Preguntó (1:08)
+3. Callaíta (3:30)
+4. Mónaco (4:06)
+5. Amorfoda (2:22)
+6. Mía ft. Drake (song)
+7. Moscow Mule (song)
+8. Baile Inolvidable (song)
+9. Efecto (song)
+
+See `MIDI_CREDITS.md` for attribution.
+
+## Dev Setup
+
+```bash
+npm install
+npm run dev              # Vite on :3000
+npm run dev:backend     # Backend on :3001 (in server/)
+npm run build           # Production build
+```
+
+Backend uses Vite proxy: `/api/*` → localhost:3001
+
+## File Structure
+
+```
+.
+├── game.html              # Quiz game (new)
+├── v2.html                # Gallery/listen mode
+├── src-v2/                # v2 synthesis engine
+│   ├── core/GameBoyPlayer.ts
+│   ├── audio/apu/APU.ts   # 8-channel hardware sim
+│   └── data/songs.ts      # Curated library
+├── server/src/
+│   ├── server.ts          # Express app
+│   └── src/               # MIDI parsing, search adapters
+├── public/midi/           # Local MIDI files
+└── MIDI_CREDITS.md        # Attribution
+
+```
+
+## Design System (Game Boy Palette)
+
+```css
+--bg-dark: #0f380f          /* deep green */
+--bg-panel: #306230         /* medium green */
+--gb-green: #9bbc0f         /* bright green (primary text) */
+--gb-light-green: #8bac0f   /* dim green (labels) */
+--gb-cream: #e0f8d0         /* light off-white */
+```
+
+Scanlines overlay: `repeating-linear-gradient(transparent 0px, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)`
+
+## Guidelines
+
+- **Game Boy aesthetic first**: Pixel font, retro colors, scanlines, blinking text
+- **Dexterity challenge**: Button animations must be unpredictable and fluid
+- **Replayability**: All 9 songs appear in every game; no elimination
+- **Responsive**: Works on desktop and mobile (game buttons are large tap targets)
+- **Accessibility**: Clear scoring rules in UI, no timer surprises
+- **Sound design**: Authentic v2 synthesis; volume control always visible
+
+## Deployment
+
+To Vercel:
+1. Push to `github.com/cipshadow/tuneraider`
+2. Connect Vercel to GitHub
+3. Set env: `REDIS_URL` (or leave empty for in-memory fallback)
+4. Vite frontend builds to `dist/`; backend at `/api/*`
+
+## Recent Work
+
+- ✅ 9-song library (full-length MIDIs)
+- ✅ Arcade button panel with swapping animation
+- ✅ Volume control integration
+- ✅ Global leaderboard (Redis + local fallback)
+- ✅ Game Boy v2 synthesis engine integration
+- ✅ MIDI attribution credits
+- 🎨 Next: Claude Design for visual improvements
+
+## Known Issues / TODOs
+
+- Mobile button sizing could be tweaked for thumb comfort
+- Leaderboard name length validation (20 chars)
+- Potential for difficulty levels (snippet length, button count)
+
+---
+
+**Status**: MVP complete, ready for design polish and Vercel deploy.

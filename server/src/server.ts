@@ -134,6 +134,87 @@ async function shareGet(code: string): Promise<SharePayload | null> {
   return localShareStore.get(code) ?? null;
 }
 
+// Leaderboard storage
+interface LeaderboardEntry {
+  member: string;
+  score: number;
+}
+
+const localLeaderboard: LeaderboardEntry[] = [];
+
+async function leaderboardSet(member: string, score: number): Promise<{ rank: number; total: number }> {
+  const key = 'leaderboard';
+
+  if (hasRedisEnv) {
+    const r = await getRedis();
+    await r.zAdd(key, { score, value: member });
+    const rank = (await r.zRevRank(key, member)) ?? -1;
+    const total = (await r.zCard(key)) ?? 0;
+    return { rank: rank + 1, total };
+  }
+
+  if (hasKvEnv) {
+    await kv.zadd(key, { score, member });
+    const rank = (await kv.zrevrank(key, member)) ?? -1;
+    const total = (await kv.zcard(key)) ?? 0;
+    return { rank: rank + 1, total };
+  }
+
+  // Local fallback
+  const existingIndex = localLeaderboard.findIndex(e => e.member === member);
+  if (existingIndex >= 0) {
+    localLeaderboard[existingIndex].score = score;
+  } else {
+    localLeaderboard.push({ member, score });
+  }
+  localLeaderboard.sort((a, b) => b.score - a.score);
+  const rank = localLeaderboard.findIndex(e => e.member === member) + 1;
+  return { rank, total: localLeaderboard.length };
+}
+
+async function leaderboardGet(): Promise<Array<{ rank: number; name: string; score: number; date: string }>> {
+  const key = 'leaderboard';
+
+  if (hasRedisEnv) {
+    const r = await getRedis();
+    const entries = await r.zRangeWithScores(key, 0, 9, { REV: true });
+    return entries.map((e, i) => {
+      const [name, timestamp] = e.value.split('|||');
+      return {
+        rank: i + 1,
+        name: name || 'Anonymous',
+        score: Math.round(e.score),
+        date: new Date(parseInt(timestamp)).toISOString(),
+      };
+    });
+  }
+
+  if (hasKvEnv) {
+    const entries = await kv.zrange(key, 0, 9, { rev: true, withScores: true });
+    return entries.map((e, i) => {
+      const [name, timestamp] = (typeof e === 'string' ? e : e.member).split('|||');
+      const score = typeof e === 'string' ? 0 : (e.score || 0);
+      return {
+        rank: i + 1,
+        name: name || 'Anonymous',
+        score: Math.round(score),
+        date: new Date(parseInt(timestamp || '0')).toISOString(),
+      };
+    });
+  }
+
+  // Local fallback
+  return localLeaderboard.slice(0, 10).map((e, i) => {
+    const [name, timestamp] = e.member.split('|||');
+    return {
+      rank: i + 1,
+      name: name || 'Anonymous',
+      score: e.score,
+      date: new Date(parseInt(timestamp)).toISOString(),
+    };
+  });
+}
+
 // Search for MIDI files
 app.get('/api/midi/search', async (req, res) => {
   try {
@@ -319,6 +400,42 @@ app.get('/api/midi/parse', async (req, res) => {
   } catch (error) {
     console.error('Parse error:', error);
     res.status(500).json({ error: 'Parse failed' });
+  }
+});
+
+// Post a game score
+app.post('/api/scores', async (req, res) => {
+  try {
+    const body = (req.body || {}) as any;
+    const name = typeof body.name === 'string' ? body.name.trim().slice(0, 20) : '';
+    const score = typeof body.score === 'number' ? Math.max(0, Math.floor(body.score)) : 0;
+
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+    if (score < 0) {
+      return res.status(400).json({ error: 'Score must be non-negative' });
+    }
+
+    const sanitizedName = escapeHtml(name);
+    const member = `${sanitizedName}|||${Date.now()}`;
+    const result = await leaderboardSet(member, score);
+
+    res.json(result);
+  } catch (error) {
+    console.error('Score post error:', error);
+    res.status(500).json({ error: 'Failed to save score' });
+  }
+});
+
+// Get leaderboard
+app.get('/api/scores', async (req, res) => {
+  try {
+    const scores = await leaderboardGet();
+    res.json(scores);
+  } catch (error) {
+    console.error('Leaderboard fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch leaderboard' });
   }
 });
 

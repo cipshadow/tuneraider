@@ -4,6 +4,12 @@ import { resolve } from 'node:path'
 export default defineConfig({
   server: {
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
@@ -21,6 +27,8 @@ export default defineConfig({
         v2: resolve(__dirname, 'v2.html'),
         v2_test: resolve(__dirname, 'v2-test.html'),
         v2_diagnostic: resolve(__dirname, 'v2-diagnostic.html'),
+        // Game mode
+        game: resolve(__dirname, 'game.html'),
       },
     },
   },
