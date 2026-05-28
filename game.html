@@ -769,6 +769,7 @@
   <script type="module">
     import { GameBoyPlayer } from './src-v2/core/GameBoyPlayer.ts';
     import { SONGS } from './src-v2/data/songs.ts';
+    import { getNormalizationGain } from './src-v2/data/songs-normalization.ts';
 
     const state = {
       songs: [...SONGS],
@@ -901,6 +902,10 @@
         currentMidiBuffer = await res.arrayBuffer();
 
         await player.resume();
+
+        // Apply audio normalization for this song
+        updateVolume();
+
         state.timerStart = Date.now();
 
         // Start timer display
@@ -992,7 +997,10 @@
           try {
             const res = await fetch(card.dataset.url);
             const buf = await res.arrayBuffer();
+            const songTitle = card.querySelector('.title').textContent;
+            currentSong = { title: songTitle };
             await player.resume();
+            updateVolume();
             await player.playMIDI(buf);
           } catch (err) {
             console.error('Listen play failed:', err);
@@ -1081,7 +1089,9 @@
 
     function updateVolume() {
       const vol = parseFloat(volumeSlider.value);
-      player.setVolume(vol / 100);
+      const baseVolume = vol / 100;
+      const gain = currentSong ? getNormalizationGain(currentSong.title) : 1.0;
+      player.setVolume(baseVolume * gain);
       volLabel.textContent = Math.round(vol) + '%';
     }
 
