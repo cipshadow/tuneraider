@@ -740,46 +740,6 @@
       border-top: 2px solid var(--gb-light-green);
     }
 
-    /* Marquee Chase */
-    .marquee-chase {
-      background: var(--bg-dark);
-      border: 2px solid var(--gb-light-green);
-      padding: 0.75rem 1rem;
-      margin: 0.75rem 0;
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .marquee-label {
-      font-size: 0.6rem;
-      color: var(--gb-light-green);
-      letter-spacing: 1px;
-      white-space: nowrap;
-      margin-right: 0.5rem;
-    }
-
-    .marquee-orbs {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .marquee-orb {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #4a3a2a;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-      transition: background-color 0.2s;
-    }
-
-    .marquee-orb.active {
-      background: #ffd400;
-      box-shadow: 0 0 8px rgba(255, 212, 0, 0.8);
-    }
-
     .credits-link {
       font-size: 0.6rem;
       color: var(--gb-light-green);
@@ -921,7 +881,7 @@
 
       <!-- Footer -->
       <div class="home-footer">
-        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • Identify Songs, Win Streaks</div>
+        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0</div>
         <a href="MIDI_CREDITS.md" class="credits-link" target="_blank" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">MIDI Credits</a>
       </div>
     </div>
@@ -990,12 +950,6 @@
             <div id="timer-bar" class="timer-bar"></div>
           </div>
           <div class="timer-text"><span id="timer-text">0s</span></div>
-        </div>
-
-        <!-- Marquee Chase -->
-        <div class="marquee-chase">
-          <span class="marquee-label">♪ MARQUEE CHASE</span>
-          <div class="marquee-orbs" id="marquee-orbs"></div>
         </div>
 
         <div id="arcade-panel" class="arcade-panel"></div>
@@ -1112,27 +1066,6 @@
     let timerInterval = null;
     let livePointsRafId = null;
 
-    function updateMarqueeChase() {
-      const elapsed = (Date.now() - state.timerStart) / 1000;
-      const clamped = Math.min(elapsed, 60);
-      const activeIndex = Math.floor((clamped / 60) * 8);
-
-      const orbs = document.querySelectorAll('.marquee-orb');
-      orbs.forEach((orb, i) => {
-        orb.classList.toggle('active', i === activeIndex);
-      });
-    }
-
-    function initMarqueeChase() {
-      const orbsContainer = document.getElementById('marquee-orbs');
-      orbsContainer.innerHTML = '';
-      for (let i = 0; i < 9; i++) {
-        const orb = document.createElement('div');
-        orb.className = 'marquee-orb';
-        orbsContainer.appendChild(orb);
-      }
-    }
-
     function updateTimerDisplay() {
       const elapsed = (Date.now() - state.timerStart) / 1000;
       const clamped = Math.min(elapsed, 60);
@@ -1140,8 +1073,6 @@
 
       const progressPercent = (clamped / 60) * 100;
       document.getElementById('timer-bar').style.width = progressPercent + '%';
-
-      updateMarqueeChase();
     }
 
     function updateLivePoints() {
@@ -1285,9 +1216,6 @@
         // Start floating notes animation
         if (notesInterval) clearInterval(notesInterval);
         notesInterval = setInterval(createFloatingNote, 300);
-
-        // Initialize marquee chase
-        initMarqueeChase();
 
         // Show answer buttons after a short delay
         setTimeout(() => {
