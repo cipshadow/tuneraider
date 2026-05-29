@@ -82,6 +82,10 @@
       display: none;
     }
 
+    #screen-home .panel:has(#leaderboard-preview) {
+      display: none;
+    }
+
     .panel {
       background: var(--bg-panel);
       border: 4px solid var(--gb-light-green);
@@ -1518,6 +1522,56 @@
         document.getElementById('btn-start-game').click();
       }
     });
+
+    // Typing animation for username placeholder
+    const exampleNames = ['Vacilator', 'BenitoFan', 'Juan', 'Jesus', 'Greg999'];
+    let currentNameIndex = 0;
+    let currentCharIndex = 0;
+    let isTyping = true;
+
+    function animateTyping() {
+      const usernameInput = document.getElementById('username-input');
+      const currentName = exampleNames[currentNameIndex];
+
+      if (isTyping) {
+        // Typing phase
+        if (currentCharIndex <= currentName.length) {
+          usernameInput.placeholder = currentName.slice(0, currentCharIndex);
+          currentCharIndex++;
+          setTimeout(animateTyping, 80);
+        } else {
+          // Finished typing, wait before erasing
+          isTyping = false;
+          setTimeout(animateTyping, 2000);
+        }
+      } else {
+        // Erasing phase
+        if (currentCharIndex > 0) {
+          currentCharIndex--;
+          usernameInput.placeholder = currentName.slice(0, currentCharIndex);
+          setTimeout(animateTyping, 50);
+        } else {
+          // Move to next name
+          currentNameIndex = (currentNameIndex + 1) % exampleNames.length;
+          isTyping = true;
+          currentCharIndex = 0;
+          setTimeout(animateTyping, 300);
+        }
+      }
+    }
+
+    // Start the animation when modal becomes visible
+    const usernameModalObs = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const modal = document.getElementById('username-modal');
+          if (modal.classList.contains('active')) {
+            animateTyping();
+          }
+        }
+      });
+    });
+    usernameModalObs.observe(document.getElementById('username-modal'), { attributes: true });
 
     // Click outside modal to close
     modal.addEventListener('click', (e) => {
