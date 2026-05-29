@@ -20,7 +20,21 @@ All original compositions are by **Bad Bunny** and associated producers/songwrit
 
 ## Disclaimer
 
-This project synthesizes existing MIDI arrangements into Game Boy-style chiptune audio for educational and entertainment purposes. The MIDI files are sourced from public MIDI libraries. Please respect original artists' rights and support official releases.
+**Educational & Non-Commercial Use Only**
+
+This project synthesizes existing MIDI arrangements into 8-bit retro audio for educational and non-commercial purposes only. The MIDI files are sourced from public MIDI libraries. 
+
+This game is created for:
+- Educational demonstration of music synthesis and interactive design
+- Non-commercial entertainment and learning
+- Personal, private use only
+
+**Not permitted for:**
+- Commercial purposes or monetization
+- Sale or distribution for profit
+- Redistribution without proper attribution
+
+Please respect original artists' rights and support official Bad Bunny releases.
 
 ---
 

@@ -9,7 +9,7 @@ export const SONG_GAINS: Record<string, number> = {
   'Mónaco': 0.92,
   'Amorfoda': 0.98,
   'Mía': 0.85,
-  'Moscow Mule': 1.02,
+  'Moscow Mule': 1.25,  // Boosted from 1.02 - was too quiet
   'Baile Inolvidable': 0.90,
   'Efecto': 0.96,
 };

@@ -751,7 +751,7 @@
   <div class="container">
     <header>
       <h1>TUNERAIDER</h1>
-      <p class="subtitle">Bad Bunny • Game Boy Chiptune Quiz</p>
+      <p class="subtitle">Bad Bunny • 8-Bit Music Quiz</p>
     </header>
 
     <!-- HOME SCREEN -->
@@ -777,7 +777,7 @@
 
       <!-- Footer -->
       <div class="home-footer">
-        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • Master the Game Boy, Win Streaks</div>
+        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • Identify Songs, Win Streaks</div>
         <a href="MIDI_CREDITS.md" class="credits-link" target="_blank" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">MIDI Credits</a>
       </div>
     </div>
@@ -788,9 +788,9 @@
         <button class="modal-close" id="modal-close">✕</button>
         <h3>How to Play</h3>
 
-        <p><strong>Identify the Bad Bunny song</strong> playing in Game Boy 8-bit and tap it from the moving buttons below the player.</p>
+        <p><strong>Identify the Bad Bunny song</strong> playing in 8-bit retro style and tap it from the moving buttons below the player.</p>
 
-        <p><strong>Speed = Points</strong><br/>Select within 1 second? 1000 points. Wait 30 seconds? Zero. Every millisecond counts.</p>
+        <p><strong>Speed = Points</strong><br/>Select within 1 second? 1000 points. Wait 60 seconds? Zero. Every millisecond counts.</p>
 
         <p><strong>Wrong picks cost you.</strong><br/>Each mistake sets you back 1,111 points. Choose wisely.</p>
 
@@ -836,7 +836,7 @@
 
         <div class="game-instruction">
           THE FASTER YOU<br/>SELECT THE<br/>MORE POINTS!<br/>
-          <span style="font-size: 0.55rem;">1s = 1000pts • 15s = 500pts • 30s = 0pts</span>
+          <span style="font-size: 0.55rem;">1s = 1000pts • 30s = 500pts • 60s = 0pts</span>
         </div>
 
         <div class="timer-wrap">
@@ -959,17 +959,17 @@
 
     function updateTimerDisplay() {
       const elapsed = (Date.now() - state.timerStart) / 1000;
-      const clamped = Math.min(elapsed, 30);
+      const clamped = Math.min(elapsed, 60);
       document.getElementById('timer-text').textContent = Math.ceil(clamped) + 's';
 
-      const progressPercent = (clamped / 30) * 100;
+      const progressPercent = (clamped / 60) * 100;
       document.getElementById('timer-bar').style.width = progressPercent + '%';
     }
 
     function updateLivePoints() {
       const elapsed = (Date.now() - state.timerStart) / 1000;
-      const clamped = Math.min(Math.max(0, elapsed), 30);
-      const livePoints = Math.max(0, Math.round(1000 * (1 - clamped / 30)));
+      const clamped = Math.min(Math.max(0, elapsed), 60);
+      const livePoints = Math.max(0, Math.round(1000 * (1 - clamped / 60)));
       document.getElementById('live-points').textContent = livePoints;
       livePointsRafId = requestAnimationFrame(updateLivePoints);
     }
@@ -1139,7 +1139,7 @@
       if (notesInterval) clearInterval(notesInterval);
 
       const elapsed = (Date.now() - state.timerStart) / 1000;
-      const clamped = Math.min(Math.max(0, elapsed), 30);
+      const clamped = Math.min(Math.max(0, elapsed), 60);
 
       let isCorrect = false;
       if (btn) {
@@ -1147,11 +1147,11 @@
         isCorrect = title === currentSong.title;
       }
 
-      // Scoring: correct = +points (1000 at 1s, 0 at 30s)
+      // Scoring: correct = +points (1000 at 1s, 0 at 60s)
       //          wrong = -1111 per song (9 songs * -1111 = -9999 if all wrong)
       let points = 0;
       if (isCorrect) {
-        points = Math.max(0, Math.round(1000 * (1 - clamped / 30)));
+        points = Math.max(0, Math.round(1000 * (1 - clamped / 60)));
       } else {
         points = -1111;
       }
