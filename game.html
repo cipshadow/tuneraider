@@ -102,16 +102,20 @@
     }
 
     .screen {
-      display: none;
+      display: none !important;
     }
 
     .screen.active {
-      display: block;
+      display: block !important;
     }
 
     #screen-home {
       max-width: 600px;
       margin: 0 auto;
+    }
+
+    #screen-home.active {
+      display: block !important;
     }
 
     #screen-game {
@@ -121,7 +125,7 @@
     }
 
     #screen-game.active {
-      display: flex;
+      display: flex !important;
       flex-direction: column;
     }
 
@@ -806,7 +810,7 @@
       font-size: 0.7rem;
       letter-spacing: 1px;
       z-index: 1000;
-      animation: fadeInOut 3s ease-in-out forwards;
+      animation: fadeInOut 1.5s ease-in-out forwards;
     }
 
     @keyframes fadeInOut {
@@ -1597,7 +1601,7 @@
         msg.style.left = (rect.left + rect.width / 2) + 'px';
         msg.style.transform = 'translate(-50%, -50%)';
         document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 3000);
+        setTimeout(() => msg.remove(), 1500);
       }
     });
 
