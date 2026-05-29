@@ -834,6 +834,12 @@
     }
 
     /* Design system overrides for game context */
+    .gb-bulbs {
+      border: none;
+      padding: 18px 0;
+      background: transparent;
+    }
+
     .gb-eq {
       display: inline-flex;
       align-items: flex-end;
@@ -1002,6 +1008,7 @@
       <div class="game-top-bar">
         <!-- Volume Controls (Left) -->
         <div class="gb-vol game-top-bar-controls">
+          <span style="font-size: 0.65rem; margin-right: 0.5rem; color: var(--gb-light-green);">VOL</span>
           <button class="gb-btn" data-vol="down" style="padding:0.3rem 0.5rem; font-size:0.65rem">−</button>
           <div class="gb-vol-meter" id="vol-meter" title="Click to set level" style="padding: 2px 3px; height: 18px;">
             <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
@@ -1016,8 +1023,7 @@
 
       <!-- Game Header (Centered) -->
       <div class="game-header">
-        <h1>TUNERAIDER</h1>
-        <div class="game-header-title">ROUND <span id="round-num-title">1</span></div>
+        <h1>TUNERAIDER ROUND <span id="round-num-title">1</span></h1>
       </div>
 
       <div class="panel">
