@@ -318,6 +318,65 @@
   .gb-bulb { animation: none; opacity: 0.7; }
 }
 
+/* ---- Arcade VU meter — green→amber→red segmented bars ----
+   Build columns with initVUMeter() (tuneraider.js). */
+.gb-vu {
+  display: flex; align-items: flex-end; gap: 4px;
+  height: 88px; padding: 10px 12px;
+  background: var(--bg-dark); border: var(--border-thin);
+}
+.gb-vu .col { position: relative; width: 13px; height: 100%; background: rgba(255,255,255,0.05); overflow: hidden; }
+.gb-vu .fill {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, #2bd64e 0%, #2bd64e 42%, #ffe400 60%, #ff8a1e 80%, #ff2d2d 100%);
+  animation: gb-vu-rise 0.5s ease-in-out infinite alternate;
+}
+.gb-vu .col::after {           /* LED segment gaps */
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(to top, rgba(10,15,8,0) 0 6px, rgba(10,15,8,0.85) 6px 8px);
+}
+@keyframes gb-vu-rise { from { clip-path: inset(82% 0 0 0); } to { clip-path: inset(6% 0 0 0); } }
+@media (prefers-reduced-motion: reduce) {
+  .gb-vu .fill { animation: none; clip-path: inset(40% 0 0 0); }
+}
+
+/* ---- Mascot — Arc Hop bunny (idle, hops sideline-to-sideline) ---- */
+.bunny-stage {
+  position: relative; height: 116px; margin-bottom: 14px;
+  border: 2px solid var(--bg-panel); overflow: hidden;
+  background: rgba(155, 188, 15, 0.02);
+}
+.bunny-stage::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 16px;
+  border-bottom: 2px dashed var(--bg-panel);
+}
+.bunny-track { position: absolute; bottom: 18px; left: 4px; }
+.bun { font-size: 30px; display: inline-block; line-height: 1; }
+@keyframes bun-cross { from { left: 4px; } to { left: calc(100% - 46px); } }
+@keyframes bun-hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-38px) rotate(-4deg); } }
+.hop-arc .bunny-track { animation: bun-cross 4.5s linear infinite alternate; }
+.hop-arc .bun         { animation: bun-hop 0.55s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .bunny-track, .bun { animation: none !important; } }
+
+/* ---- Disco grid — Game Boy disco floor; cells flash in palette colors ----
+   Build cells with initDiscoGrid() (tuneraider.js). */
+.gb-disco {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 8), 1fr);
+  gap: 6px; padding: 12px;
+  background: var(--bg-dark); border: var(--border-thin);
+}
+.gb-disco .cell {
+  aspect-ratio: 1 / 1; border-radius: 3px;
+  background: var(--c, #2bd64e); opacity: 0.16;
+  animation: gb-disco-flash 1.2s steps(1, end) infinite;
+}
+@keyframes gb-disco-flash {
+  0%, 100% { opacity: 0.16; box-shadow: none; }
+  50%      { opacity: 1; box-shadow: 0 0 8px 1px var(--c); }
+}
+@media (prefers-reduced-motion: reduce) { .gb-disco .cell { animation: none; opacity: 0.5; } }
+
 /* ============================================================
    LEADERBOARD
    ============================================================ */

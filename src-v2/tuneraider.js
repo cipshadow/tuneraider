@@ -105,3 +105,36 @@ export function initMarquee(el, { count = 9, colors } = {}) {
     el.appendChild(b);
   }
 }
+
+/* ---- Arcade VU meter ----
+   Fills a .gb-vu container with N columns whose green→red fills rise
+   at randomized speeds for an organic bouncing-meter look.            */
+export function initVUMeter(el, { count = 14 } = {}) {
+  el.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const col = document.createElement('div'); col.className = 'col';
+    const fill = document.createElement('div'); fill.className = 'fill';
+    fill.style.animationDuration = (0.40 + Math.random() * 0.5).toFixed(2) + 's';
+    fill.style.animationDelay = (-Math.random() * 0.7).toFixed(2) + 's';
+    col.appendChild(fill); el.appendChild(col);
+  }
+}
+
+/* ---- Disco grid ----
+   Fills a .gb-disco container with rows×cols cells that flash in random
+   palette colors on staggered loops — a Game Boy disco floor.          */
+export function initDiscoGrid(el, { rows = 3, cols = 8, colors } = {}) {
+  const COLORS = colors || [
+    '#ff2d2d', '#ff8a1e', '#ffd400', '#5dff3a',
+    '#00e5ff', '#2d7bff', '#ff5ecb', '#b46bff',
+  ];
+  el.style.setProperty('--cols', cols);
+  el.innerHTML = '';
+  for (let i = 0; i < rows * cols; i++) {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    cell.style.setProperty('--c', COLORS[Math.floor(Math.random() * COLORS.length)]);
+    cell.style.animationDuration = (0.9 + Math.random() * 1.2).toFixed(2) + 's';
+    cell.style.animationDelay = (-Math.random() * 1.5).toFixed(2) + 's';
+    el.appendChild(cell);
+  }
+}

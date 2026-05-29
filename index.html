@@ -173,41 +173,30 @@
       position: relative;
     }
 
-    /* Mascot hop — from design system (ARC HOP) */
-    .bunny-track {
+    /* Footer mascot ticker — slim bunny hopping across the footer bar.
+       Namespaced so it doesn't collide with the design-system .bunny-stage. */
+    .footer-bunny-track {
       position: absolute;
-      left: 0;
-      right: 0;
-      top: -2rem;
-      height: 2rem;
-      overflow: hidden;
+      left: 0; right: 0; top: -2rem;
+      height: 2rem; overflow: hidden;
       pointer-events: none;
     }
-
-    .bunny-mover {
-      position: absolute;
-      bottom: 0;
-      left: -2rem;
-      animation: bun-cross 5s linear infinite;
+    .footer-bunny-mover {
+      position: absolute; bottom: 0; left: -2rem;
+      animation: footer-bun-cross 5s linear infinite;
     }
-
     .footer-bunny {
-      display: inline-block;
-      font-size: 1.15rem;
-      line-height: 1;
+      display: inline-block; font-size: 1.15rem; line-height: 1;
+      animation: footer-bun-hop 0.55s ease-in-out infinite;
     }
-
-    @keyframes bun-cross {
-      from { left: -2rem; }
-      to   { left: 100%; }
-    }
-
-    @keyframes bun-hop {
+    @keyframes footer-bun-cross { from { left: -2rem; } to { left: 100%; } }
+    @keyframes footer-bun-hop {
       0%, 100% { transform: translateY(0); }
       50%      { transform: translateY(-14px) rotate(-4deg); }
     }
-
-    .footer-bunny { animation: bun-hop 0.55s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .footer-bunny-mover, .footer-bunny { animation: none; }
+    }
 
     /* Arcade VU meter (listen page) */
     .vu-meter {
@@ -224,44 +213,7 @@
       text-align: center;
       padding: 0.4rem;
     }
-    .vu-bars {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 4px;
-      height: 84px;
-      padding: 12px;
-      margin: 6px;
-      background: var(--bg-dark);
-    }
-    .vu-bars i {
-      width: 10px;
-      height: 100%;
-      background: linear-gradient(to top, #9bbc0f 0%, #9bbc0f 55%, #e8d44a 76%, #f0a020 100%);
-      background-size: 100% 60px;
-      background-position: bottom;
-      background-repeat: no-repeat;
-      animation: vu-bounce 0.7s ease-in-out infinite alternate;
-    }
-    .vu-bars i:nth-child(1)  { animation-duration: 0.62s; animation-delay: -0.20s; }
-    .vu-bars i:nth-child(2)  { animation-duration: 0.78s; animation-delay: -0.45s; }
-    .vu-bars i:nth-child(3)  { animation-duration: 0.54s; animation-delay: -0.10s; }
-    .vu-bars i:nth-child(4)  { animation-duration: 0.88s; animation-delay: -0.60s; }
-    .vu-bars i:nth-child(5)  { animation-duration: 0.50s; animation-delay: -0.30s; }
-    .vu-bars i:nth-child(6)  { animation-duration: 0.72s; animation-delay: -0.05s; }
-    .vu-bars i:nth-child(7)  { animation-duration: 0.60s; animation-delay: -0.50s; }
-    .vu-bars i:nth-child(8)  { animation-duration: 0.84s; animation-delay: -0.15s; }
-    .vu-bars i:nth-child(9)  { animation-duration: 0.56s; animation-delay: -0.40s; }
-    .vu-bars i:nth-child(10) { animation-duration: 0.80s; animation-delay: -0.25s; }
-    .vu-bars i:nth-child(11) { animation-duration: 0.52s; animation-delay: -0.55s; }
-    .vu-bars i:nth-child(12) { animation-duration: 0.76s; animation-delay: -0.08s; }
-    .vu-bars i:nth-child(13) { animation-duration: 0.58s; animation-delay: -0.35s; }
-    .vu-bars i:nth-child(14) { animation-duration: 0.86s; animation-delay: -0.18s; }
-    .vu-bars i:nth-child(15) { animation-duration: 0.64s; animation-delay: -0.48s; }
-    @keyframes vu-bounce { from { height: 16%; } to { height: 100%; } }
-    @media (prefers-reduced-motion: reduce) {
-      .vu-bars i { animation: none; height: 55%; }
-    }
+    .vu-meter .gb-vu { margin: 6px; border: none; }
 
     /* Modal Overlay */
     #modal-overlay {
@@ -1329,11 +1281,12 @@
             <p style="text-align: center; color: var(--gb-light-green); font-size: 0.65rem;">Loading...</p>
           </div>
         </div>
+
       </div>
 
       <!-- Footer -->
       <div class="home-footer">
-        <div class="bunny-track"><span class="bunny-mover"><span class="footer-bunny" aria-hidden="true">🐰</span></span></div>
+        <div class="footer-bunny-track"><span class="footer-bunny-mover"><span class="footer-bunny" aria-hidden="true">🐰</span></span></div>
         <div style="margin-bottom: 1rem;">TUNERAIDER v1.0</div>
         <a href="/credits.html" class="credits-link" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">Credits</a>
       </div>
@@ -1442,6 +1395,7 @@
     <div id="screen-result" class="screen">
       <div class="panel result-screen" style="position: relative;">
         <button class="gb-btn" id="btn-exit-result" style="position: absolute; top: 0.5rem; right: 0.5rem; padding: 0.3rem 0.5rem; font-size: 0.6rem; white-space: nowrap;">EXIT</button>
+        <div class="gb-disco" id="result-disco" aria-hidden="true" style="max-width: 240px; margin: 0 auto 1.25rem; padding: 6px; gap: 4px;"></div>
         <div id="result-icon" class="result-icon">✓</div>
         <div id="result-text" class="result-text">Correct!</div>
         <div class="score-display">
@@ -1511,10 +1465,7 @@
     <div id="screen-listen" class="screen">
       <div class="vu-meter">
         <div class="vu-title">♪ ARCADE VU METER</div>
-        <div class="vu-bars" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        </div>
+        <div class="gb-vu" id="listen-vu" aria-hidden="true"></div>
       </div>
       <div class="panel">
         <h2>LISTEN MODE</h2>
@@ -1528,7 +1479,7 @@
     import { GameBoyPlayer } from './src-v2/core/GameBoyPlayer.ts';
     import { SONGS } from './src-v2/data/songs.ts';
     import { getNormalizationGain } from './src-v2/data/songs-normalization.ts';
-    import { fireCorrect, fireWrong, initVolumeMeter, setMelodyPlaying, initMarquee } from './src-v2/tuneraider.js';
+    import { fireCorrect, fireWrong, initVolumeMeter, setMelodyPlaying, initMarquee, initVUMeter, initDiscoGrid } from './src-v2/tuneraider.js';
 
     const state = {
       songs: [...SONGS],
@@ -1789,6 +1740,7 @@
 
     function showResult(isCorrect, points, correctTitle, elapsed, timedOut = false) {
       showScreen('result');
+      initDiscoGrid(document.getElementById('result-disco'), { rows: 3, cols: 8 });
       let icon, iconColor, text;
       if (isCorrect) {
         icon = '✓'; iconColor = 'var(--gb-cream)'; text = 'CORRECT!';
@@ -1806,6 +1758,7 @@
     }
 
     function setupListenMode() {
+      initVUMeter(document.getElementById('listen-vu'), { count: 14 });
       const grid = document.getElementById('listen-grid');
       grid.innerHTML = state.songs.map(song => `
         <div class="song-card" data-url="${song.midiUrl}">

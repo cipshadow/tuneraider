@@ -264,6 +264,35 @@
 | 3rd | 🥉 | Bronze highlight | Standard |
 | 4-10 | #4, #5... | Normal green | Plain number |
 
+### Now-Playing Visualizers
+
+Three interchangeable "live sound" widgets, all CSS-driven (no audio needed). The marquee bulb chase (`.gb-bulbs`, `initMarquee()`) is the in-game now-playing strip; the two below are alternates defined in `src-v2/styles/tuneraider.css` and built from `src-v2/tuneraider.js`.
+
+**Arcade VU Meter** (`.gb-vu`, `initVUMeter(el, { count })`)
+Segmented columns whose green→amber→red fills rise on randomized speeds. LED gaps come from a `repeating-linear-gradient` overlay; the level animates via `clip-path` (`gb-vu-rise`). Mounted at the top of LISTEN MODE.
+```html
+<div class="gb-vu" id="my-vu"></div>
+<script>initVUMeter(document.getElementById('my-vu'), { count: 14 });</script>
+```
+
+**Disco Grid** (`.gb-disco`, `initDiscoGrid(el, { rows, cols, colors })`)
+A Game Boy disco floor — `rows × cols` cells flashing in random palette colors on staggered loops (`gb-disco-flash`). `--cols` controls the column count. Mounted at the top of the RESULT screen.
+```html
+<div class="gb-disco" id="my-disco"></div>
+<script>initDiscoGrid(document.getElementById('my-disco'), { rows: 3, cols: 8 });</script>
+```
+
+### Mascot — Arc Hop Bunny
+
+`.bunny-stage` + `.hop-arc` — an idle 🐰 that hops sideline-to-sideline on a stage with a dashed ground line. `bun-cross` walks it across; `bun-hop` gives the parabolic bounce with a slight rotate. Pure CSS, no JS. Mounted on the idle/menu (HOME) screen. Swap the `.bun` glyph for a sprite if one is added to `public/`.
+```html
+<div class="bunny-stage hop-arc">
+  <div class="bunny-track"><span class="bun">🐰</span></div>
+</div>
+```
+
+All three honor `prefers-reduced-motion: reduce` (animations freeze).
+
 ---
 
 ## 5. Animations
