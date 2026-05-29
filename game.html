@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src-v2/styles/tuneraider.css">
   <style>
     * {
       box-sizing: border-box;
@@ -930,6 +931,7 @@
     import { GameBoyPlayer } from './src-v2/core/GameBoyPlayer.ts';
     import { SONGS } from './src-v2/data/songs.ts';
     import { getNormalizationGain } from './src-v2/data/songs-normalization.ts';
+    import { fireCorrect, fireWrong } from './src-v2/tuneraider.js';
 
     const state = {
       songs: [...SONGS],
@@ -1156,12 +1158,21 @@
 
       if (btn) {
         btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+        // Fire celebration or error burst
+        if (isCorrect) {
+          fireCorrect('WEPA');
+        } else {
+          fireWrong('NOOO');
+        }
+
         setTimeout(() => {
           state.score += points;
           showResult(isCorrect, points, currentSong.title, clamped);
         }, 600);
       } else {
         // Timed out
+        fireWrong('NOOO');
         state.score += 0;
         showResult(false, 0, currentSong.title, 30);
       }

@@ -1,0 +1,439 @@
+/* ============================================================
+   TUNERAIDER — Game Boy Design System
+   v1.0  •  Reusable tokens + components
+   Drop this in and apply classes. Font is loaded via @font-face.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('fonts/PressStart2P.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- Core palette (4-shade Game Boy DMG ramp) ---- */
+  --bg-dark:        #0f380f;  /* darkest — page bg, deep shadow */
+  --bg-panel:       #306230;  /* mid — panels, cards, raised chrome */
+  --gb-light-green: #8bac0f;  /* dim — secondary labels, borders */
+  --gb-green:       #9bbc0f;  /* bright — primary text, highlights */
+  --gb-cream:       #e0f8d0;  /* lightest — values, success, focus */
+
+  /* ---- Semantic ---- */
+  --correct:        #9bbc0f;
+  --wrong:          #ff4444;
+  --wrong-bg:       #3a0a0a;
+  --text-disabled:  #666666;
+
+  /* ---- Effects ---- */
+  --scanline-opacity: 0.08;
+  --shadow-text: 2px 2px 0 #0a280a;
+
+  /* ---- Spacing scale (8px base) ---- */
+  --sp-1: 8px;
+  --sp-2: 12px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 32px;
+
+  /* ---- Borders (chunky pixel chrome) ---- */
+  --border-thin:  2px solid var(--gb-light-green);
+  --border-mid:   3px solid var(--gb-green);
+  --border-thick: 4px solid var(--gb-light-green);
+}
+
+/* ============================================================
+   GLOBALS
+   ============================================================ */
+.gb-root {
+  background: var(--bg-dark);
+  color: var(--gb-green);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* CRT scanline overlay — attach to a fixed full-bleed element */
+.gb-scanlines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 4px
+  );
+}
+
+/* ============================================================
+   PANELS & CARDS
+   ============================================================ */
+.gb-panel {
+  background: var(--bg-panel);
+  border: var(--border-thick);
+  padding: var(--sp-4);
+}
+
+.gb-panel-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-1);
+  border-bottom: var(--border-thin);
+  color: var(--gb-green);
+}
+
+.gb-card {
+  background: var(--bg-dark);
+  border: var(--border-thin);
+  padding: var(--sp-2);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.gb-btn {
+  background: var(--bg-dark);
+  border: var(--border-mid);
+  color: var(--gb-green);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.gb-btn:hover    { background: var(--gb-green); color: var(--bg-dark); }
+.gb-btn:active   { transform: translate(1px, 1px); }
+.gb-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.gb-btn:disabled:hover { background: var(--bg-dark); color: var(--gb-green); }
+
+/* Primary CTA — full width, thicker frame, tinted hover */
+.gb-btn-primary {
+  width: 100%;
+  border: var(--border-thick);
+  border-color: var(--gb-green);
+  font-size: 13px;
+  padding: 19px 24px;
+}
+.gb-btn-primary:hover { background: rgba(155, 188, 15, 0.2); color: var(--gb-green); }
+
+/* Answer button — the orbiting arcade tile */
+.gb-answer {
+  background: var(--bg-dark);
+  border: var(--border-mid);
+  color: var(--gb-green);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  min-height: 80px;
+  padding: 24px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  word-wrap: break-word;
+}
+.gb-answer:hover  { background: rgba(155, 188, 15, 0.2); }
+.gb-answer:active { transform: scale(0.98); }
+.gb-answer.correct {
+  background: var(--gb-green);
+  color: var(--bg-dark);
+  border-color: var(--gb-cream);
+}
+.gb-answer.wrong {
+  background: var(--wrong-bg);
+  border-color: var(--wrong);
+}
+
+/* ============================================================
+   HUD
+   ============================================================ */
+.gb-hud {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+.gb-hud-item {
+  background: var(--bg-dark);
+  border: var(--border-thin);
+  padding: var(--sp-1);
+  text-align: center;
+}
+.gb-hud-label { font-size: 9px;  color: var(--gb-light-green); margin-bottom: 5px; }
+.gb-hud-value { font-size: 16px; color: var(--gb-cream); }
+
+/* ============================================================
+   TIMER BAR
+   ============================================================ */
+.gb-timer-wrap {
+  background: var(--bg-dark);
+  border: var(--border-mid);
+  height: 20px;
+  overflow: hidden;
+}
+.gb-timer-fill {
+  height: 100%;
+  background: var(--gb-green);
+  width: 100%;
+  transition: width linear;
+}
+
+/* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+.gb-label {
+  display: block;
+  font-size: 11px;
+  color: var(--gb-light-green);
+  margin-bottom: var(--sp-1);
+}
+.gb-input {
+  width: 100%;
+  background: var(--bg-dark);
+  border: var(--border-mid);
+  color: var(--gb-green);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  padding: 12px;
+}
+.gb-input:focus { outline: none; border-color: var(--gb-cream); }
+.gb-input::placeholder { color: var(--text-disabled); }
+
+.gb-slider {
+  width: 120px;
+  height: 8px;
+  cursor: pointer;
+  background: var(--bg-dark);
+  border: 1px solid var(--gb-light-green);
+  accent-color: var(--gb-cream);
+}
+
+/* ---- Segmented staircase volume meter (pixel EQ knob) ---- */
+.gb-vol { display: flex; align-items: center; gap: 12px; }
+.gb-vol-meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 30px;
+  padding: 4px 6px;
+  background: var(--bg-dark);
+  border: var(--border-mid);
+  cursor: pointer;
+}
+.gb-vol-meter i { display: block; width: 8px; background: var(--bg-panel); transition: background 0.06s; }
+.gb-vol-meter i.on { background: var(--gb-green); }
+.gb-vol-meter i.peak { background: var(--gb-cream); }
+.gb-vol-meter i:nth-child(1)  { height: 5px; }
+.gb-vol-meter i:nth-child(2)  { height: 7px; }
+.gb-vol-meter i:nth-child(3)  { height: 9px; }
+.gb-vol-meter i:nth-child(4)  { height: 11px; }
+.gb-vol-meter i:nth-child(5)  { height: 13px; }
+.gb-vol-meter i:nth-child(6)  { height: 15px; }
+.gb-vol-meter i:nth-child(7)  { height: 17px; }
+.gb-vol-meter i:nth-child(8)  { height: 19px; }
+.gb-vol-meter i:nth-child(9)  { height: 21px; }
+.gb-vol-meter i:nth-child(10) { height: 22px; }
+.gb-vol-meter i:nth-child(11) { height: 22px; }
+.gb-vol-meter i:nth-child(12) { height: 22px; }
+.gb-vol-val { font-size: 11px; color: var(--gb-cream); min-width: 42px; }
+
+/* ---- Melody equalizer — the "now playing" visualizer ---- */
+.gb-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 46px;
+}
+.gb-eq i {
+  display: block;
+  width: 8px;
+  height: 100%;
+  background: var(--gb-green);
+  transform-origin: bottom;
+  animation: gb-eq-bounce 0.7s ease-in-out infinite alternate;
+}
+.gb-eq i:nth-child(odd)  { background: var(--gb-cream); }
+.gb-eq i:nth-child(1) { animation-duration: 0.62s; animation-delay: -0.20s; }
+.gb-eq i:nth-child(2) { animation-duration: 0.78s; animation-delay: -0.45s; }
+.gb-eq i:nth-child(3) { animation-duration: 0.54s; animation-delay: -0.10s; }
+.gb-eq i:nth-child(4) { animation-duration: 0.88s; animation-delay: -0.60s; }
+.gb-eq i:nth-child(5) { animation-duration: 0.50s; animation-delay: -0.30s; }
+.gb-eq i:nth-child(6) { animation-duration: 0.72s; animation-delay: -0.05s; }
+.gb-eq i:nth-child(7) { animation-duration: 0.60s; animation-delay: -0.50s; }
+.gb-eq i:nth-child(8) { animation-duration: 0.84s; animation-delay: -0.15s; }
+.gb-eq i:nth-child(9) { animation-duration: 0.56s; animation-delay: -0.40s; }
+@keyframes gb-eq-bounce {
+  0%   { transform: scaleY(0.18); }
+  100% { transform: scaleY(1); }
+}
+.gb-eq.paused i { animation-play-state: paused; transform: scaleY(0.18); }
+
+/* ---- Pixel note glyph (clean, simple) ---- */
+.gb-note {
+  font-family: 'Press Start 2P', monospace;
+  color: var(--gb-cream);
+  text-shadow: 2px 2px 0 var(--title-shadow, #0a280a);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gb-eq i { animation: none; transform: scaleY(0.55); }
+}
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+.gb-leaderboard {
+  background: var(--bg-dark);
+  border: var(--border-mid);
+}
+.gb-leaderboard ol { list-style: none; margin: 0; padding: 0; }
+.gb-leaderboard li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--sp-2);
+  align-items: center;
+  padding: var(--sp-2);
+  font-size: 11px;
+  border-bottom: var(--border-thin);
+  border-bottom-color: var(--bg-panel);
+}
+.gb-leaderboard li:last-child  { border-bottom: none; }
+.gb-leaderboard li:nth-child(even) { background: rgba(155, 188, 15, 0.07); }
+.gb-rank   { font-size: 16px; min-width: 30px; text-align: center; }
+.gb-lb-name  { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gb-lb-score { text-align: right; color: var(--gb-cream); }
+
+/* ============================================================
+   SONG CARD (Listen mode)
+   ============================================================ */
+.gb-song-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--sp-2);
+}
+.gb-song-card {
+  background: var(--bg-dark);
+  border: var(--border-thin);
+  padding: var(--sp-2);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gb-song-card:hover {
+  background: rgba(155, 188, 15, 0.15);
+  border-color: var(--gb-green);
+  transform: translateY(-2px);
+}
+.gb-song-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  background: rgba(155, 188, 15, 0.12);
+  border: 1px solid var(--gb-light-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+.gb-song-title  { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gb-song-artist { font-size: 9px; color: var(--gb-light-green); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes gb-blink { 50% { opacity: 0; } }
+.gb-blink { animation: gb-blink 0.6s infinite; }
+
+@keyframes gb-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.1); }
+}
+.gb-pulse { animation: gb-pulse 0.8s infinite; }
+
+@keyframes gb-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.gb-bounce { animation: gb-bounce 0.6s; }
+
+@keyframes gb-float-up {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-100px) scale(0.3); }
+}
+
+/* ============================================================
+   FX BURST — overlapping retro title celebration / fail
+   window.fireCorrect('WEPA')  → positive palette, white flash
+   window.fireWrong('NOOO')    → negative palette, red flash
+   Layers pop back-to-front and cascade upward, then fade.
+   ============================================================ */
+.cb-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10000;
+  animation: cb-fade 1.9s ease-out forwards;
+}
+.cb-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 54%, var(--flash, rgba(255,255,255,0.55)), transparent 46%);
+  animation: cb-flash 0.4s ease-out forwards;
+}
+.cb-word {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(52px, 12vw, 150px);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  opacity: 0;
+  /* thick dark outline so tightly-stacked layers stay legible */
+  text-shadow:
+    -3px 0 0 var(--outline), 3px 0 0 var(--outline),
+    0 -3px 0 var(--outline), 0 3px 0 var(--outline),
+    -3px -3px 0 var(--outline), 3px -3px 0 var(--outline),
+    -3px 3px 0 var(--outline), 3px 3px 0 var(--outline),
+    6px 7px 0 rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.5);
+  animation: cb-pop 0.46s cubic-bezier(0.2, 1.5, 0.4, 1) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes cb-fade {
+  0%   { opacity: 1; transform: translateY(0); }
+  72%  { opacity: 1; transform: translateY(-24px); }
+  100% { opacity: 0; transform: translateY(-72px); }
+}
+@keyframes cb-flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes cb-pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) translate(var(--dx), calc(var(--dy) + 44px)) scale(0.5); }
+  70%  { opacity: 1; transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(1.12); }
+  100% { opacity: 1; transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cb-word { animation: none; opacity: 1; transform: translate(-50%, -50%) translate(var(--dx), var(--dy)); }
+  .cb-burst { animation: cb-fade 1.2s ease-out forwards; }
+}
+
+/* Orbital drift for arcade answer tiles (excerpt — 1 of 6 paths) */
+@keyframes gb-orbit1 {
+  0%, 100% { transform: translate(0, 0);      z-index: 2; }
+  12%      { transform: translate(50px,-30px); z-index: 1; }
+  25%      { transform: translate(70px, 10px); z-index: 3; }
+  37%      { transform: translate(50px, 50px); z-index: 2; }
+  50%      { transform: translate(0,   60px); z-index: 1; }
+  62%      { transform: translate(-60px,40px); z-index: 3; }
+  75%      { transform: translate(-70px,-20px);z-index: 2; }
+  87%      { transform: translate(-40px,-50px);z-index: 1; }
+}
