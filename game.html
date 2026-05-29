@@ -102,6 +102,12 @@
       margin: 0 auto;
     }
 
+    #screen-game {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+
     .home-section {
       display: flex;
       flex-direction: column;
@@ -518,10 +524,12 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.75rem 0;
-      border-top: 2px solid var(--bg-panel);
-      border-bottom: 2px solid var(--bg-panel);
-      margin: 1rem 0;
+      padding: 0.75rem 1.5rem;
+      background: var(--bg-panel);
+      border: 2px solid var(--gb-light-green);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 10;
     }
 
     .volume-btn {
@@ -900,6 +908,17 @@
 
     <!-- GAME SCREEN -->
     <div id="screen-game" class="screen">
+      <!-- Volume Control & Exit Button -->
+      <div class="gb-vol volume-control">
+        <button class="gb-btn" data-vol="down" style="padding:0.5rem 0.75rem; font-size:0.7rem">−</button>
+        <div class="gb-vol-meter" id="vol-meter" title="Click to set level">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <button class="gb-btn" data-vol="up" style="padding:0.5rem 0.75rem; font-size:0.7rem">+</button>
+        <span class="gb-vol-val" id="vol-val" style="font-size:0.7rem">70%</span>
+        <button class="gb-btn" id="btn-exit-game" style="padding:0.5rem 0.75rem; font-size:0.7rem; margin-left: auto;">EXIT</button>
+      </div>
+
       <div class="panel">
         <div class="hud">
           <div class="hud-item">
@@ -910,17 +929,6 @@
             <div class="hud-label">SCORE</div>
             <div class="hud-value"><span id="game-score">0</span></div>
           </div>
-        </div>
-
-        <!-- Volume Control -->
-        <div class="gb-vol volume-control">
-          <button class="gb-btn" data-vol="down" style="padding:0.5rem 0.75rem; font-size:0.7rem">−</button>
-          <div class="gb-vol-meter" id="vol-meter" title="Click to set level">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
-          <button class="gb-btn" data-vol="up" style="padding:0.5rem 0.75rem; font-size:0.7rem">+</button>
-          <span class="gb-vol-val" id="vol-val" style="font-size:0.7rem">70%</span>
-          <button class="gb-btn" id="btn-exit-game" style="padding:0.5rem 0.75rem; font-size:0.7rem; margin-left: auto;">EXIT</button>
         </div>
 
         <div id="now-playing" class="now-playing">
@@ -948,19 +956,6 @@
         </div>
 
         <div id="arcade-panel" class="arcade-panel"></div>
-
-        <!-- Mascot Animation -->
-        <div style="margin-top: 2rem; position: relative; height: 116px; border: 2px solid var(--bg-panel); overflow: hidden; background: rgba(155,188,15,0.02);">
-          <span style="position: absolute; top: 0.5rem; left: 0.5rem; font-size: 0.6rem; color: var(--gb-light-green); letter-spacing: 0.5px; z-index: 2;">MASCOT IDLE</span>
-          <div style="position: absolute; bottom: 18px; left: 4px; animation: bun-cross 4.5s linear infinite alternate;">
-            <span style="font-size: 1.8rem; display: inline-block; line-height: 1; animation: bun-hop 0.55s ease-in-out infinite;">🐰</span>
-          </div>
-        </div>
-
-        <style>
-          @keyframes bun-cross { from { left: 4px; } to { left: calc(100% - 46px); } }
-          @keyframes bun-hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-24px) rotate(-4deg); } }
-        </style>
       </div>
     </div>
 
