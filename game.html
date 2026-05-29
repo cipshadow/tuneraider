@@ -1183,6 +1183,14 @@
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const screen = document.getElementById(`screen-${id}`);
       if (screen) screen.classList.add('active');
+
+      // Hide header when not on home screen
+      const header = document.querySelector('header');
+      if (id === 'home') {
+        header.style.display = '';
+      } else {
+        header.style.display = 'none';
+      }
     }
 
     let timerInterval = null;
