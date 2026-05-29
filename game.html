@@ -515,13 +515,13 @@
     .answer-btn:nth-child(6) { animation: orbit6 9s infinite ease-in-out; }
 
     .volume-control {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      z-index: 100;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-top: 2px solid var(--bg-panel);
+      border-bottom: 2px solid var(--bg-panel);
+      margin: 1rem 0;
     }
 
     .volume-btn {
@@ -745,6 +745,102 @@
     .credits-link:hover {
       background: rgba(155, 188, 15, 0.2);
     }
+
+    /* Design system overrides for game context */
+    .gb-eq {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 32px;
+    }
+
+    .gb-eq i {
+      display: block;
+      width: 6px;
+      height: 100%;
+      background: var(--gb-green);
+      transform-origin: bottom;
+      animation: gb-eq-bounce 0.7s ease-in-out infinite alternate;
+    }
+
+    .gb-eq i:nth-child(odd) { background: var(--gb-cream); }
+
+    @keyframes gb-eq-bounce {
+      0% { transform: scaleY(0.18); }
+      100% { transform: scaleY(1); }
+    }
+
+    .gb-note {
+      font-family: 'Press Start 2P', monospace;
+      color: var(--gb-cream);
+      text-shadow: 2px 2px 0 #0a280a;
+    }
+
+    .gb-vol {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .gb-vol-meter {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 24px;
+      padding: 3px 4px;
+      background: var(--bg-dark);
+      border: 2px solid var(--gb-green);
+      cursor: pointer;
+    }
+
+    .gb-vol-meter i {
+      display: block;
+      width: 6px;
+      background: var(--bg-panel);
+      transition: background 0.06s;
+    }
+
+    .gb-vol-meter i.on { background: var(--gb-green); }
+    .gb-vol-meter i.peak { background: var(--gb-cream); }
+
+    .gb-vol-meter i:nth-child(1) { height: 4px; }
+    .gb-vol-meter i:nth-child(2) { height: 5px; }
+    .gb-vol-meter i:nth-child(3) { height: 6px; }
+    .gb-vol-meter i:nth-child(4) { height: 8px; }
+    .gb-vol-meter i:nth-child(5) { height: 10px; }
+    .gb-vol-meter i:nth-child(6) { height: 12px; }
+    .gb-vol-meter i:nth-child(7) { height: 13px; }
+    .gb-vol-meter i:nth-child(8) { height: 14px; }
+    .gb-vol-meter i:nth-child(9) { height: 15px; }
+    .gb-vol-meter i:nth-child(10) { height: 16px; }
+    .gb-vol-meter i:nth-child(11) { height: 16px; }
+    .gb-vol-meter i:nth-child(12) { height: 16px; }
+
+    .gb-vol-val {
+      font-size: 0.7rem;
+      color: var(--gb-cream);
+      min-width: 35px;
+    }
+
+    .gb-btn {
+      background: var(--bg-dark);
+      border: 2px solid var(--gb-green);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .gb-btn:hover {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+    }
+
+    .gb-btn:active {
+      transform: translate(1px, 1px);
+    }
   </style>
 </head>
 <body>
@@ -804,16 +900,7 @@
 
     <!-- GAME SCREEN -->
     <div id="screen-game" class="screen">
-      <div class="panel" style="position: relative;">
-        <div class="volume-control">
-          <button class="volume-btn" id="btn-vol-down">−</button>
-          <div class="volume-slider-wrap">
-            <span class="volume-label" id="vol-label">70%</span>
-            <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="70">
-          </div>
-          <button class="volume-btn" id="btn-vol-up">+</button>
-        </div>
-
+      <div class="panel">
         <div class="hud">
           <div class="hud-item">
             <div class="hud-label">ROUND</div>
@@ -825,8 +912,22 @@
           </div>
         </div>
 
+        <!-- Volume Control -->
+        <div class="gb-vol volume-control">
+          <button class="gb-btn" data-vol="down" style="padding:0.5rem 0.75rem; font-size:0.7rem">−</button>
+          <div class="gb-vol-meter" id="vol-meter" title="Click to set level">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <button class="gb-btn" data-vol="up" style="padding:0.5rem 0.75rem; font-size:0.7rem">+</button>
+          <span class="gb-vol-val" id="vol-val" style="font-size:0.7rem">70%</span>
+          <button class="gb-btn" id="btn-exit-game" style="padding:0.5rem 0.75rem; font-size:0.7rem; margin-left: auto;">EXIT</button>
+        </div>
+
         <div id="now-playing" class="now-playing">
-          <div class="now-playing-base">♪ ♪ ♪</div>
+          <div class="gb-eq" id="eq-demo">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <span class="gb-note" style="font-size:1.2rem; margin-left:0.5rem">♫</span>
         </div>
 
         <div class="current-points-display">
@@ -847,6 +948,19 @@
         </div>
 
         <div id="arcade-panel" class="arcade-panel"></div>
+
+        <!-- Mascot Animation -->
+        <div style="margin-top: 2rem; position: relative; height: 116px; border: 2px solid var(--bg-panel); overflow: hidden; background: rgba(155,188,15,0.02);">
+          <span style="position: absolute; top: 0.5rem; left: 0.5rem; font-size: 0.6rem; color: var(--gb-light-green); letter-spacing: 0.5px; z-index: 2;">MASCOT IDLE</span>
+          <div style="position: absolute; bottom: 18px; left: 4px; animation: bun-cross 4.5s linear infinite alternate;">
+            <span style="font-size: 1.8rem; display: inline-block; line-height: 1; animation: bun-hop 0.55s ease-in-out infinite;">🐰</span>
+          </div>
+        </div>
+
+        <style>
+          @keyframes bun-cross { from { left: 4px; } to { left: calc(100% - 46px); } }
+          @keyframes bun-hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-24px) rotate(-4deg); } }
+        </style>
       </div>
     </div>
 
@@ -931,7 +1045,7 @@
     import { GameBoyPlayer } from './src-v2/core/GameBoyPlayer.ts';
     import { SONGS } from './src-v2/data/songs.ts';
     import { getNormalizationGain } from './src-v2/data/songs-normalization.ts';
-    import { fireCorrect, fireWrong } from './src-v2/tuneraider.js';
+    import { fireCorrect, fireWrong, initVolumeMeter, setMelodyPlaying } from './src-v2/tuneraider.js';
 
     const state = {
       songs: [...SONGS],
@@ -1299,6 +1413,16 @@
       showScreen('home');
     });
 
+    document.getElementById('btn-exit-game').addEventListener('click', () => {
+      player.stop();
+      if (timerInterval) clearInterval(timerInterval);
+      if (livePointsRafId) cancelAnimationFrame(livePointsRafId);
+      if (notesInterval) clearInterval(notesInterval);
+      if (state.snippetTimeout) clearTimeout(state.snippetTimeout);
+      state.isAnswered = false;
+      showScreen('home');
+    });
+
     function revealAnswers() {
       const arcadePanel = document.getElementById('arcade-panel');
 
@@ -1318,29 +1442,38 @@
       });
     }
 
-    // Volume control
-    const volumeSlider = document.getElementById('volume-slider');
-    const volLabel = document.getElementById('vol-label');
-    const btnVolDown = document.getElementById('btn-vol-down');
-    const btnVolUp = document.getElementById('btn-vol-up');
+    // Volume control using design system meter
+    const volMeter = document.getElementById('vol-meter');
+    const volVal = document.getElementById('vol-val');
+    let volControl = null;
+    let currentVolume = 70;
 
     function updateVolume() {
-      const vol = parseFloat(volumeSlider.value);
-      const baseVolume = vol / 100;
+      const baseVolume = currentVolume / 100;
       const gain = currentSong ? getNormalizationGain(currentSong.title) : 1.0;
       player.setVolume(baseVolume * gain);
-      volLabel.textContent = Math.round(vol) + '%';
     }
 
-    volumeSlider.addEventListener('input', updateVolume);
-    btnVolDown.addEventListener('click', () => {
-      volumeSlider.value = Math.max(0, parseFloat(volumeSlider.value) - 10);
-      updateVolume();
-    });
-    btnVolUp.addEventListener('click', () => {
-      volumeSlider.value = Math.min(100, parseFloat(volumeSlider.value) + 10);
-      updateVolume();
-    });
+    if (volMeter && volVal) {
+      volControl = initVolumeMeter(volMeter, {
+        value: 70,
+        onChange: (vol) => {
+          currentVolume = vol;
+          updateVolume();
+          volVal.textContent = Math.round(vol) + '%';
+        }
+      });
+
+      // ± buttons for volume
+      document.querySelectorAll('[data-vol]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dir = btn.dataset.vol === 'up' ? 5 : -5;
+          volControl.nudge(dir);
+          currentVolume = volControl.value;
+          volVal.textContent = Math.round(volControl.value) + '%';
+        });
+      });
+    }
 
     // Init
     loadLeaderboardPreview();
