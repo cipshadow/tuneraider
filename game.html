@@ -97,59 +97,17 @@
     }
 
     #screen-home {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      align-items: start;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    .home-left {
+    .home-section {
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
     }
 
-    .home-right {
-      background: var(--bg-panel);
-      border: 4px solid var(--gb-light-green);
-      padding: 1.5rem;
-      font-size: 0.7rem;
-      line-height: 1.6;
-      color: var(--gb-cream);
-    }
-
-    .home-right h3 {
-      font-size: 0.75rem;
-      color: var(--gb-green);
-      margin-bottom: 1rem;
-      letter-spacing: 1px;
-    }
-
-    .home-right p {
-      margin-bottom: 1rem;
-    }
-
-    .home-right .cta-button {
-      margin-top: 1.5rem;
-      padding: 0.75rem 1rem;
-      background: var(--bg-dark);
-      border: 3px solid var(--gb-green);
-      color: var(--gb-green);
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.6rem;
-      cursor: pointer;
-      display: inline-block;
-      width: 100%;
-      text-align: center;
-    }
-
-    .home-right .cta-button:hover {
-      background: var(--gb-green);
-      color: var(--bg-dark);
-    }
-
     .home-footer {
-      grid-column: 1 / -1;
       text-align: center;
       font-size: 0.65rem;
       color: var(--gb-light-green);
@@ -158,13 +116,116 @@
       border-top: 2px solid var(--gb-light-green);
     }
 
-    @media (max-width: 900px) {
-      #screen-home {
-        grid-template-columns: 1fr;
-      }
-      .home-footer {
-        grid-column: 1;
-      }
+    /* Modal Overlay */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-panel);
+      border: 4px solid var(--gb-light-green);
+      padding: 2rem;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      font-size: 0.7rem;
+      line-height: 1.6;
+      color: var(--gb-cream);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--bg-dark);
+      border: 2px solid var(--gb-green);
+      color: var(--gb-green);
+      font-size: 1.2rem;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+    }
+
+    .modal-content h3 {
+      font-size: 0.85rem;
+      color: var(--gb-green);
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .modal-content p {
+      margin-bottom: 1rem;
+    }
+
+    .modal-content strong {
+      color: var(--gb-green);
+    }
+
+    .modal-cta {
+      margin-top: 2rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-green);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .modal-cta:hover {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+    }
+
+    /* Disabled button state */
+    .btn-disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      position: relative;
+    }
+
+    .btn-disabled:hover {
+      background: var(--bg-dark) !important;
+      color: var(--gb-green) !important;
+    }
+
+    .btn-disabled::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: -2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-dark);
+      border: 1px solid var(--gb-green);
+      color: var(--gb-light-green);
+      padding: 0.5rem;
+      font-size: 0.6rem;
+      white-space: nowrap;
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 2px;
     }
 
     button {
@@ -694,16 +755,17 @@
 
     <!-- HOME SCREEN -->
     <div id="screen-home" class="screen active">
-      <!-- LEFT COLUMN: Game Controls -->
-      <div class="home-left">
+      <div class="home-section">
+        <!-- INSERT COIN Panel -->
         <div class="panel">
           <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gb-light-green); font-size: 0.75rem;">
             <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
           </p>
           <button class="btn-primary" id="btn-play-game">🕹️ PLAY GAME</button>
-          <button class="btn-primary" id="btn-listen">🎧 LISTEN MODE</button>
+          <button class="btn-primary btn-disabled" id="btn-listen" data-tooltip="Complete a game to unlock">🎧 LISTEN MODE</button>
         </div>
 
+        <!-- TOP SCORES Panel -->
         <div class="panel">
           <h2>TOP SCORES</h2>
           <div id="leaderboard-preview">
@@ -712,22 +774,30 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: Instructions -->
-      <div class="home-right">
-        <h3>How to Play</h3>
-        <p><strong>Identify the chiptune</strong> playing and tap it from the moving buttons below the player.</p>
-        <p><strong>Speed = Points</strong><br/>Select within 1 second? 1000 points. Wait 30 seconds? Zero. Every millisecond counts.</p>
-        <p><strong>Wrong picks cost you.</strong><br/>Each mistake sets you back 1,111 points. Choose wisely.</p>
-        <p><strong>9 rounds of Bad Bunny</strong> classics. Can you dominate the leaderboard?</p>
-        <p style="font-size: 0.65rem; color: var(--gb-light-green); margin-top: 1rem;">Keep listening between rounds—no penalty for taking your time. Just don't leave empty-handed.</p>
-
-        <button class="cta-button" id="btn-play-game-cta">▶ INSERT COIN TO START</button>
-      </div>
-
-      <!-- FOOTER -->
+      <!-- Footer -->
       <div class="home-footer">
-        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • Identify Chiptunes, Win Streaks</div>
+        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • Master the Game Boy, Win Streaks</div>
         <a href="MIDI_CREDITS.md" class="credits-link" target="_blank" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">MIDI Credits</a>
+      </div>
+    </div>
+
+    <!-- MODAL: How to Play -->
+    <div id="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" id="modal-close">✕</button>
+        <h3>How to Play</h3>
+
+        <p><strong>Identify the Bad Bunny song</strong> playing in Game Boy 8-bit and tap it from the moving buttons below the player.</p>
+
+        <p><strong>Speed = Points</strong><br/>Select within 1 second? 1000 points. Wait 30 seconds? Zero. Every millisecond counts.</p>
+
+        <p><strong>Wrong picks cost you.</strong><br/>Each mistake sets you back 1,111 points. Choose wisely.</p>
+
+        <p><strong>9 rounds of Bad Bunny</strong> classics. Can you dominate the leaderboard?</p>
+
+        <p style="font-size: 0.65rem; color: var(--gb-light-green); margin-top: 1rem;">Keep listening between rounds—no interruption when you guess. Just make your move count.</p>
+
+        <button class="modal-cta" id="btn-modal-start">▶ INSERT COIN TO START</button>
       </div>
     </div>
 
@@ -869,6 +939,7 @@
       timerStart: 0,
       snippetTimeout: null,
       isAnswered: false,
+      hasPlayedGame: false, // Track if user has completed a game
     };
 
     const player = new GameBoyPlayer();
@@ -930,9 +1001,9 @@
       try {
         const res = await fetch('/api/scores');
         const scores = await res.json();
-        const top3 = scores.slice(0, 3);
-        const html = top3.length > 0
-          ? top3.map((s) => `<div style="padding: 0.5rem 0; font-size: 0.7rem; border-bottom: 1px solid var(--bg-dark);">
+        const top10 = scores.slice(0, 10);
+        const html = top10.length > 0
+          ? top10.map((s) => `<div style="padding: 0.5rem 0; font-size: 0.7rem; border-bottom: 1px solid var(--bg-dark);">
               <span style="color: var(--gb-cream);">${getLeaderboardIcon(s.rank)} ${s.name}</span>
               <span style="float: right; color: var(--gb-green);">${s.score}</span>
             </div>`).join('')
@@ -977,6 +1048,11 @@
     }
 
     async function startGame() {
+      // Unlock LISTEN MODE now that user has played a game
+      state.hasPlayedGame = true;
+      btnListen.classList.remove('btn-disabled');
+      btnListen.removeAttribute('data-tooltip');
+
       // Shuffle all songs, but ensure DtMF is always first
       const dtmfSong = state.songs.find(s => s.title === 'DtMF');
       const otherSongs = state.songs.filter(s => s.title !== 'DtMF');
@@ -1152,11 +1228,39 @@
     }
 
     // Event listeners
-    document.getElementById('btn-play-game').addEventListener('click', startGame);
-    document.getElementById('btn-play-game-cta').addEventListener('click', startGame);
-    document.getElementById('btn-listen').addEventListener('click', () => {
-      setupListenMode();
-      showScreen('listen');
+    // Modal controls
+    const modal = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const btnPlayGame = document.getElementById('btn-play-game');
+    const btnModalStart = document.getElementById('btn-modal-start');
+    const btnListen = document.getElementById('btn-listen');
+
+    function openModal() {
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+    }
+
+    btnPlayGame.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+    btnModalStart.addEventListener('click', () => {
+      closeModal();
+      startGame();
+    });
+
+    // Click outside modal to close
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // LISTEN MODE - only available after playing a game
+    btnListen.addEventListener('click', () => {
+      if (state.hasPlayedGame) {
+        setupListenMode();
+        showScreen('listen');
+      }
     });
 
     document.getElementById('btn-next').addEventListener('click', () => {
