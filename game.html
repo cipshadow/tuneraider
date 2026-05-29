@@ -740,6 +740,46 @@
       border-top: 2px solid var(--gb-light-green);
     }
 
+    /* Marquee Chase */
+    .marquee-chase {
+      background: var(--bg-dark);
+      border: 2px solid var(--gb-light-green);
+      padding: 0.75rem 1rem;
+      margin: 0.75rem 0;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .marquee-label {
+      font-size: 0.6rem;
+      color: var(--gb-light-green);
+      letter-spacing: 1px;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+    }
+
+    .marquee-orbs {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .marquee-orb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4a3a2a;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+      transition: background-color 0.2s;
+    }
+
+    .marquee-orb.active {
+      background: #ffd400;
+      box-shadow: 0 0 8px rgba(255, 212, 0, 0.8);
+    }
+
     .credits-link {
       font-size: 0.6rem;
       color: var(--gb-light-green);
@@ -952,6 +992,12 @@
           <div class="timer-text"><span id="timer-text">0s</span></div>
         </div>
 
+        <!-- Marquee Chase -->
+        <div class="marquee-chase">
+          <span class="marquee-label">♪ MARQUEE CHASE</span>
+          <div class="marquee-orbs" id="marquee-orbs"></div>
+        </div>
+
         <div id="arcade-panel" class="arcade-panel"></div>
       </div>
     </div>
@@ -1066,6 +1112,27 @@
     let timerInterval = null;
     let livePointsRafId = null;
 
+    function updateMarqueeChase() {
+      const elapsed = (Date.now() - state.timerStart) / 1000;
+      const clamped = Math.min(elapsed, 60);
+      const activeIndex = Math.floor((clamped / 60) * 8);
+
+      const orbs = document.querySelectorAll('.marquee-orb');
+      orbs.forEach((orb, i) => {
+        orb.classList.toggle('active', i === activeIndex);
+      });
+    }
+
+    function initMarqueeChase() {
+      const orbsContainer = document.getElementById('marquee-orbs');
+      orbsContainer.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const orb = document.createElement('div');
+        orb.className = 'marquee-orb';
+        orbsContainer.appendChild(orb);
+      }
+    }
+
     function updateTimerDisplay() {
       const elapsed = (Date.now() - state.timerStart) / 1000;
       const clamped = Math.min(elapsed, 60);
@@ -1073,6 +1140,8 @@
 
       const progressPercent = (clamped / 60) * 100;
       document.getElementById('timer-bar').style.width = progressPercent + '%';
+
+      updateMarqueeChase();
     }
 
     function updateLivePoints() {
@@ -1217,6 +1286,9 @@
         if (notesInterval) clearInterval(notesInterval);
         notesInterval = setInterval(createFloatingNote, 300);
 
+        // Initialize marquee chase
+        initMarqueeChase();
+
         // Show answer buttons after a short delay
         setTimeout(() => {
           revealAnswers();
@@ -1257,12 +1329,13 @@
       }
 
       // Scoring: correct = +points (1000 at 1s, 0 at 60s)
-      //          wrong = -1111 per song (9 songs * -1111 = -9999 if all wrong)
+      //          wrong = -1000 to -2000 (scales with time waited)
       let points = 0;
       if (isCorrect) {
         points = Math.max(0, Math.round(1000 * (1 - clamped / 60)));
       } else {
-        points = -1111;
+        // Wrong penalty: -1000 at 0s, -2000 at 60s
+        points = Math.round(-(1000 + (clamped / 60) * 1000));
       }
 
       if (btn) {
