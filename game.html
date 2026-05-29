@@ -78,6 +78,10 @@
       display: none;
     }
 
+    #screen-game .hud {
+      display: none;
+    }
+
     .panel {
       background: var(--bg-panel);
       border: 4px solid var(--gb-light-green);
@@ -1023,23 +1027,17 @@
 
       <!-- Game Header (Centered) -->
       <div class="game-header">
-        <h1>TUNERAIDER ROUND <span id="round-num-title">1</span></h1>
+        <h1>TUNERAIDER: ROUND <span id="round-num-title">1</span></h1>
+      </div>
+
+      <!-- Marquee (between header and panel) -->
+      <div id="now-playing" class="now-playing" style="margin: 1rem 0;">
+        <div class="gb-bulbs" id="now-playing-bulbs"></div>
       </div>
 
       <div class="panel">
-        <div class="hud">
-          <div class="hud-item">
-            <div class="hud-label">ROUND</div>
-            <div class="hud-value"><span id="round-num">1</span>/<span id="round-total">9</span></div>
-          </div>
-          <div class="hud-item">
-            <div class="hud-label">SCORE</div>
-            <div class="hud-value"><span id="game-score">0</span></div>
-          </div>
-        </div>
-
-        <div id="now-playing" class="now-playing">
-          <div class="gb-bulbs" id="now-playing-bulbs"></div>
+        <div id="now-playing" class="now-playing" style="display: none;">
+          <div class="gb-bulbs" id="now-playing-bulbs-old"></div>
         </div>
 
         <div class="current-points-display">
