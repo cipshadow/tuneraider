@@ -2,8 +2,30 @@
 
 ## Date: 2026-05-29
 
+## 2026-05-29 (late) — Result-screen UX + 10th song
+
+- **Result screen:** EXIT moved to a small chip anchored top-right of the panel; NEXT is now a single centered button (was a 50/50 row).
+- **Score sign bug:** removed the hardcoded `+` before round points so negatives no longer render as `+-1020`; sign is now derived in `showResult` (`(points>=0?'+':'')+points`).
+- **No double name prompt:** removed the post-game "YOUR NAME" input on the gameover screen; we now reuse the username collected upfront (`state.playerName`) and show "Playing as <name>". `submitScore` reads `state.playerName`.
+- **Rank result modal:** replaced the browser `alert("Rank: …")` with an in-game Game Boy modal (`#rank-modal`) showing rank/total plus a hopping ASCII bunny (`.bunny-hop` keyframes). ASCII over emoji per global pref.
+- **How to Play:** modal body text centered (`.modal-content p { text-align:center }`).
+- **10th song:** added Dákiti — copied `~/Downloads/Dakiti - Bad Bunny.mid` → `public/midi/dakiti-bad-bunny.mid`, appended to `src-v2/data/songs.ts`. Round count is derived from the song list, so it's now 10 rounds automatically; updated the "9 rounds" copy → "10 rounds". NOTE: the Dakiti MIDI is a minimal single-channel file (55 notes, ~14.9s) — plays fine but simpler than the multi-track others.
+- **Dir rename:** project folder renamed `motif-bad-bunny` → `tuneraider`; stale vite procs bound to old paths were killed and the dev server restarted from `/Users/cip/personal_vibes/tuneraider`.
+
+All verified via headless Chrome (Playwright + system Chrome): 10-song library, Dákiti plays, result/gameover/rank screens render correctly, no page errors.
+
 ## Overview
 Continued development of TUNERAIDER Bad Bunny chiptune quiz game. Focused on UI refinements, user flow improvements, and fixing critical display/visibility bugs.
+
+## 2026-05-29 (later) — Fixed game stuck on round screen
+
+**Symptom:** After entering username and starting, the game froze on the round panel — "CURRENT POINTS 1000" / "0s" static, no answer buttons, no audio.
+
+**Root cause:** A prior commit removed the HUD (ROUND/SCORE display), deleting elements `round-num`, `round-total`, `game-score`. But `startRound()` still set `.textContent` on them (lines 1323/1325/1326), *before* the try/catch. The first `getElementById('round-num')` returned null → `Cannot set properties of null` threw synchronously, aborting `startRound` right after `showScreen('game')`. So the screen showed its static initial HTML and nothing else ran.
+
+**Fix:** Removed the three dead lines, kept only `round-num-title` (the surviving element). `game.html` ~line 1323.
+
+**Verified** via headless Chrome (Playwright + system Chrome): full flow → 6 answer buttons render, timer advances, points decrement, MIDI plays (4797 notes, 82.9s). Also restarted dev server on :3000 (stale vite procs were pointing at the old emptied `/Users/cip/motif-bad-bunny` path → 404s).
 
 ## Major Issues Fixed
 

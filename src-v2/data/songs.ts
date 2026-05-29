@@ -16,4 +16,5 @@ export const SONGS: CuratedSong[] = [
   { title: 'Moscow Mule', artist: 'Bad Bunny', midiUrl: '/midi/moscow-mule-bad-bunny.mid' },
   { title: 'Baile Inolvidable', artist: 'Bad Bunny', midiUrl: '/midi/debrayume_bad-bunny---baile-inolvidable.mid' },
   { title: 'Efecto', artist: 'Bad Bunny', midiUrl: '/midi/bad-bunny---efecto.mid' },
+  { title: 'Dákiti', artist: 'Bad Bunny', midiUrl: '/midi/dakiti-bad-bunny.mid' },
 ];
