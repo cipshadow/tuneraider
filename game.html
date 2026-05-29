@@ -170,6 +170,39 @@
       margin-top: 2rem;
       padding-top: 1rem;
       border-top: 2px solid var(--gb-light-green);
+      position: relative;
+    }
+
+    .bunny-track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -1.7rem;
+      height: 1.7rem;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .footer-bunny {
+      position: absolute;
+      bottom: 0;
+      left: -2.5rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      line-height: 1;
+      color: var(--gb-green);
+      white-space: nowrap;
+      animation: bunnyRun 7s linear infinite, bunnyHopY 0.55s ease-in-out infinite;
+    }
+
+    @keyframes bunnyRun {
+      0%   { left: -2.5rem; }
+      100% { left: 100%; }
+    }
+
+    @keyframes bunnyHopY {
+      0%, 100% { transform: translateY(0); }
+      40%      { transform: translateY(-9px); }
     }
 
     /* Modal Overlay */
@@ -980,7 +1013,7 @@
   <div class="container">
     <header>
       <h1>TUNERAIDER</h1>
-      <p class="subtitle">Bad Bunny • 8-Bit Music Quiz</p>
+      <p class="subtitle">Bad Bunny • 8-Bit Music</p>
     </header>
 
     <!-- HOME SCREEN -->
@@ -1006,6 +1039,7 @@
 
       <!-- Footer -->
       <div class="home-footer">
+        <div class="bunny-track"><span class="footer-bunny" aria-hidden="true">(\_/)</span></div>
         <div style="margin-bottom: 1rem;">TUNERAIDER v1.0</div>
         <a href="MIDI_CREDITS.md" class="credits-link" target="_blank" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">MIDI Credits</a>
       </div>
@@ -1017,15 +1051,13 @@
         <button class="modal-close" id="modal-close">✕</button>
         <h3>How to Play</h3>
 
-        <p><strong>Identify the Bad Bunny song</strong> playing in 8-bit retro style and tap it from the moving buttons below the player.</p>
+        <p><strong>Listen &amp; tap.</strong><br/>A Bad Bunny track plays in 8-bit. Hit its title from the moving buttons.</p>
 
-        <p><strong>Speed = Points</strong><br/>Select within 1 second? 1000 points. Wait 60 seconds? Zero. Every millisecond counts.</p>
+        <p><strong>Speed wins.</strong><br/>The sooner you pick, the more points. Trust your ear.</p>
 
-        <p><strong>Wrong picks cost you.</strong><br/>Each mistake sets you back 1,111 points. Choose wisely.</p>
+        <p><strong>Misses hurt.</strong><br/>Wrong guesses cost you—and the longer you stall, the worse it stings.</p>
 
-        <p><strong>10 rounds of Bad Bunny</strong> classics. Can you dominate the leaderboard?</p>
-
-        <p style="font-size: 0.65rem; color: var(--gb-light-green); margin-top: 1rem;">Keep listening between rounds—no interruption when you guess. Just make your move count.</p>
+        <p><strong>10 rounds.</strong><br/>The song plays on after each pick, so keep listening. Top the leaderboard.</p>
 
         <button class="modal-cta" id="btn-modal-start">▶ INSERT COIN TO START</button>
       </div>
