@@ -46,9 +46,13 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
+    }
+
+    #screen-home.screen.active {
+      display: grid;
     }
 
     header {
@@ -90,6 +94,77 @@
 
     .screen.active {
       display: block;
+    }
+
+    #screen-home {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .home-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .home-right {
+      background: var(--bg-panel);
+      border: 4px solid var(--gb-light-green);
+      padding: 1.5rem;
+      font-size: 0.7rem;
+      line-height: 1.6;
+      color: var(--gb-cream);
+    }
+
+    .home-right h3 {
+      font-size: 0.75rem;
+      color: var(--gb-green);
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+
+    .home-right p {
+      margin-bottom: 1rem;
+    }
+
+    .home-right .cta-button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-green);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      cursor: pointer;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .home-right .cta-button:hover {
+      background: var(--gb-green);
+      color: var(--bg-dark);
+    }
+
+    .home-footer {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--gb-light-green);
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--gb-light-green);
+    }
+
+    @media (max-width: 900px) {
+      #screen-home {
+        grid-template-columns: 1fr;
+      }
+      .home-footer {
+        grid-column: 1;
+      }
     }
 
     button {
@@ -619,25 +694,40 @@
 
     <!-- HOME SCREEN -->
     <div id="screen-home" class="screen active">
-      <div class="panel">
-        <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gb-light-green); font-size: 0.75rem;">
-          <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
-        </p>
-        <button class="btn-primary" id="btn-play-game">▶ PLAY GAME</button>
-        <button class="btn-primary" id="btn-listen">🎧 LISTEN MODE</button>
-      </div>
+      <!-- LEFT COLUMN: Game Controls -->
+      <div class="home-left">
+        <div class="panel">
+          <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gb-light-green); font-size: 0.75rem;">
+            <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
+          </p>
+          <button class="btn-primary" id="btn-play-game">🕹️ PLAY GAME</button>
+          <button class="btn-primary" id="btn-listen">🎧 LISTEN MODE</button>
+        </div>
 
-      <div class="panel">
-        <h2>TOP SCORES</h2>
-        <div id="leaderboard-preview">
-          <p style="text-align: center; color: var(--gb-light-green); font-size: 0.65rem;">Loading...</p>
+        <div class="panel">
+          <h2>TOP SCORES</h2>
+          <div id="leaderboard-preview">
+            <p style="text-align: center; color: var(--gb-light-green); font-size: 0.65rem;">Loading...</p>
+          </div>
         </div>
       </div>
 
-      <div class="logo-small">
-        TUNERAIDER v1.0 • Identify Chiptunes, Win Streaks
-        <br/>
-        <a href="MIDI_CREDITS.md" class="credits-link" target="_blank">MIDI Credits</a>
+      <!-- RIGHT COLUMN: Instructions -->
+      <div class="home-right">
+        <h3>How to Play</h3>
+        <p><strong>Identify the chiptune</strong> playing and tap it from the moving buttons below the player.</p>
+        <p><strong>Speed = Points</strong><br/>Select within 1 second? 1000 points. Wait 30 seconds? Zero. Every millisecond counts.</p>
+        <p><strong>Wrong picks cost you.</strong><br/>Each mistake sets you back 1,111 points. Choose wisely.</p>
+        <p><strong>9 rounds of Bad Bunny</strong> classics. Can you dominate the leaderboard?</p>
+        <p style="font-size: 0.65rem; color: var(--gb-light-green); margin-top: 1rem;">Keep listening between rounds—no penalty for taking your time. Just don't leave empty-handed.</p>
+
+        <button class="cta-button" id="btn-play-game-cta">▶ INSERT COIN TO START</button>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="home-footer">
+        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • Identify Chiptunes, Win Streaks</div>
+        <a href="MIDI_CREDITS.md" class="credits-link" target="_blank" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">MIDI Credits</a>
       </div>
     </div>
 
@@ -1063,6 +1153,7 @@
 
     // Event listeners
     document.getElementById('btn-play-game').addEventListener('click', startGame);
+    document.getElementById('btn-play-game-cta').addEventListener('click', startGame);
     document.getElementById('btn-listen').addEventListener('click', () => {
       setupListenMode();
       showScreen('listen');
