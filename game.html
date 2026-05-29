@@ -970,7 +970,7 @@
             <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
           </p>
           <button class="btn-primary" id="btn-play-game">🕹️ PLAY GAME</button>
-          <button class="btn-primary btn-disabled" id="btn-listen" data-tooltip="Complete a game to unlock">🎧 LISTEN MODE</button>
+          <button class="btn-primary" id="btn-listen">🎧 LISTEN MODE</button>
         </div>
 
         <!-- TOP SCORES Panel -->
@@ -1530,10 +1530,15 @@
         setupListenMode();
         showScreen('listen');
       } else {
-        // Show unlock message
+        // Show unlock message positioned over the button
+        const rect = btnListen.getBoundingClientRect();
         const msg = document.createElement('div');
         msg.className = 'unlock-message';
         msg.textContent = 'PLAY GAME ONCE TO UNLOCK';
+        msg.style.position = 'fixed';
+        msg.style.top = (rect.top + rect.height / 2 - 20) + 'px';
+        msg.style.left = (rect.left + rect.width / 2) + 'px';
+        msg.style.transform = 'translate(-50%, -50%)';
         document.body.appendChild(msg);
         setTimeout(() => msg.remove(), 3000);
       }
