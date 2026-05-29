@@ -842,8 +842,8 @@
         const scores = await res.json();
         const top3 = scores.slice(0, 3);
         const html = top3.length > 0
-          ? top3.map((s, i) => `<div style="padding: 0.5rem 0; font-size: 0.7rem; border-bottom: 1px solid var(--bg-dark);">
-              <span style="color: var(--gb-cream);">${['🥇', '🥈', '🥉'][i]} ${s.name}</span>
+          ? top3.map((s) => `<div style="padding: 0.5rem 0; font-size: 0.7rem; border-bottom: 1px solid var(--bg-dark);">
+              <span style="color: var(--gb-cream);">${getLeaderboardIcon(s.rank)} ${s.name}</span>
               <span style="float: right; color: var(--gb-green);">${s.score}</span>
             </div>`).join('')
           : '<p style="text-align: center; color: var(--gb-light-green); font-size: 0.65rem;">No scores yet</p>';
@@ -851,6 +851,18 @@
       } catch (err) {
         console.error('Leaderboard preview failed:', err);
       }
+    }
+
+    const rankIcons = ['🐴', '🍺', '🎸', '👑', '🌟', '🔥', '💎'];
+    function getLeaderboardIcon(rank) {
+      if (rank === 1) return '🥇';
+      if (rank === 2) return '🥈';
+      if (rank === 3) return '🥉';
+      if (rank >= 4 && rank <= 10) {
+        // Deterministic icon based on rank so same rank always has same icon
+        return rankIcons[(rank - 4) % rankIcons.length];
+      }
+      return rank + '.';
     }
 
     async function loadFullLeaderboard() {
@@ -864,7 +876,7 @@
         }
         list.innerHTML = scores.map(s => `
           <li>
-            <span class="rank-badge">${['🥇', '🥈', '🥉'][s.rank - 1] || s.rank + '.'}</span>
+            <span class="rank-badge">${getLeaderboardIcon(s.rank)}</span>
             <span class="leaderboard-name">${s.name}</span>
             <span class="leaderboard-score">${s.score}</span>
           </li>
@@ -875,7 +887,10 @@
     }
 
     async function startGame() {
-      state.shuffled = shuffle(state.songs);
+      // Shuffle all songs, but ensure DtMF is always first
+      const dtmfSong = state.songs.find(s => s.title === 'DtMF');
+      const otherSongs = state.songs.filter(s => s.title !== 'DtMF');
+      state.shuffled = dtmfSong ? [dtmfSong, ...shuffle(otherSongs)] : shuffle(state.songs);
       state.round = 0;
       state.score = 0;
       startRound(0);
@@ -893,6 +908,11 @@
       currentSong = state.shuffled[index];
 
       showScreen('game');
+
+      // Clear arcade panel to remove any classes from previous round
+      const arcadePanel = document.getElementById('arcade-panel');
+      arcadePanel.innerHTML = '';
+
       document.getElementById('round-num').textContent = index + 1;
       document.getElementById('round-total').textContent = state.shuffled.length;
       document.getElementById('game-score').textContent = state.score;
@@ -954,10 +974,14 @@
         isCorrect = title === currentSong.title;
       }
 
-      // Score: faster = more points. At 1s = 1000, at 30s = 0
-      const points = isCorrect
-        ? Math.max(0, Math.round(1000 * (1 - clamped / 30)))
-        : 0;
+      // Scoring: correct = +points (1000 at 1s, 0 at 30s)
+      //          wrong = -1111 per song (9 songs * -1111 = -9999 if all wrong)
+      let points = 0;
+      if (isCorrect) {
+        points = Math.max(0, Math.round(1000 * (1 - clamped / 30)));
+      } else {
+        points = -1111;
+      }
 
       if (btn) {
         btn.classList.add(isCorrect ? 'correct' : 'wrong');
