@@ -799,9 +799,14 @@
       font-weight: bold;
     }
 
+    #screen-listen {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
     .song-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
     }
 
@@ -1236,6 +1241,10 @@
       .leaderboard li {
         padding: 0.5rem;
         font-size: 0.6rem;
+      }
+
+      .song-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .song-card {
@@ -1778,11 +1787,19 @@
       }
     }
 
-    function showResult(isCorrect, points, correctTitle, elapsed) {
+    function showResult(isCorrect, points, correctTitle, elapsed, timedOut = false) {
       showScreen('result');
-      document.getElementById('result-icon').textContent = isCorrect ? '✓' : 'TIME!';
-      document.getElementById('result-icon').style.color = isCorrect ? 'var(--gb-cream)' : '#ff4444';
-      document.getElementById('result-text').textContent = isCorrect ? 'CORRECT!' : 'TIME\'S UP!';
+      let icon, iconColor, text;
+      if (isCorrect) {
+        icon = '✓'; iconColor = 'var(--gb-cream)'; text = 'CORRECT!';
+      } else if (timedOut) {
+        icon = 'TIME!'; iconColor = '#ff4444'; text = 'TIME\'S UP!';
+      } else {
+        icon = '✗'; iconColor = '#ff4444'; text = 'WRONG!';
+      }
+      document.getElementById('result-icon').textContent = icon;
+      document.getElementById('result-icon').style.color = iconColor;
+      document.getElementById('result-text').textContent = text;
       document.getElementById('round-points').textContent = (points >= 0 ? '+' : '') + points;
       document.getElementById('total-score').textContent = state.score;
       document.getElementById('now-playing-song').textContent = `♪ ${correctTitle} ♪`;
