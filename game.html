@@ -1011,13 +1011,240 @@
     .gb-btn:active {
       transform: translate(1px, 1px);
     }
+
+    /* Mobile responsiveness */
+    @media (max-width: 640px) {
+      body {
+        font-size: 9px;
+      }
+
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      h1 {
+        font-size: 1rem;
+        letter-spacing: 1px;
+      }
+
+      .subtitle {
+        font-size: 0.55rem;
+      }
+
+      .panel {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 2px solid var(--gb-light-green);
+      }
+
+      h2 {
+        font-size: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .game-top-bar {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .gb-vol {
+        gap: 0.3rem;
+        font-size: 0.5rem;
+      }
+
+      .gb-vol-meter {
+        height: 14px;
+      }
+
+      .gb-btn {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.55rem;
+      }
+
+      #btn-exit-game {
+        font-size: 0.5rem;
+        padding: 0.3rem 0.4rem;
+      }
+
+      .game-header h1 {
+        font-size: 1rem;
+        margin: 0;
+      }
+
+      .game-header-title {
+        font-size: 1rem;
+      }
+
+      .game-instruction {
+        font-size: 0.5rem;
+        margin: 0.3rem 0;
+      }
+
+      .arcade-panel {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin: 0.75rem 0;
+      }
+
+      .answer-btn {
+        padding: 1rem 0.75rem;
+        font-size: 0.5rem;
+        min-height: 60px;
+        border: 2px solid var(--gb-green);
+      }
+
+      /* Disable orbital animations on mobile for clarity and performance */
+      .answer-btn:nth-child(1),
+      .answer-btn:nth-child(2),
+      .answer-btn:nth-child(3),
+      .answer-btn:nth-child(4),
+      .answer-btn:nth-child(5),
+      .answer-btn:nth-child(6) {
+        animation: none !important;
+        transform: translate(0, 0) !important;
+      }
+
+      .current-points-display {
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+      }
+
+      .current-points-label {
+        font-size: 0.5rem;
+      }
+
+      .current-points-value {
+        font-size: 0.9rem;
+      }
+
+      .hud {
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .hud-item {
+        padding: 0.4rem;
+      }
+
+      .hud-label {
+        font-size: 0.5rem;
+      }
+
+      .hud-value {
+        font-size: 0.8rem;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+        max-height: 90vh;
+        font-size: 0.6rem;
+      }
+
+      .modal-content h3 {
+        font-size: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .modal-content p {
+        margin-bottom: 0.75rem;
+      }
+
+      .modal-cta {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.55rem;
+        margin-top: 1rem;
+      }
+
+      .btn-primary {
+        padding: 0.8rem 1rem;
+        font-size: 0.7rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .result-icon {
+        font-size: 2rem;
+      }
+
+      .result-text {
+        font-size: 0.7rem;
+      }
+
+      .score-display {
+        font-size: 1rem;
+        margin: 1rem 0;
+      }
+
+      .button-row {
+        gap: 0.3rem;
+        margin-top: 1rem;
+      }
+
+      .leaderboard li {
+        padding: 0.5rem;
+        font-size: 0.6rem;
+      }
+
+      .song-card {
+        padding: 0.5rem;
+        gap: 0.3rem;
+      }
+
+      .song-card .title {
+        font-size: 0.6rem;
+      }
+
+      .song-card .artist {
+        font-size: 0.5rem;
+      }
+
+      #now-playing {
+        margin: 0.5rem 0;
+      }
+
+      .floating-note {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        font-size: 8px;
+      }
+
+      h1 {
+        font-size: 0.9rem;
+      }
+
+      .arcade-panel {
+        gap: 0.3rem;
+      }
+
+      .answer-btn {
+        min-height: 50px;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.48rem;
+      }
+
+      .home-section {
+        gap: 1rem;
+      }
+
+      .bunny-hop {
+        font-size: 0.75rem;
+      }
+
+      .input-group input {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>TUNERAIDER</h1>
-      <p class="subtitle">Bad Bunny • 8-Bit Music</p>
+      <p class="subtitle">Bad Bunny Edition</p>
     </header>
 
     <!-- HOME SCREEN -->
