@@ -1527,13 +1527,18 @@
       });
     }
 
+    let isSubmitting = false;
     async function submitScore() {
+      if (isSubmitting) return; // guard against double-submit while POST is in flight
       const name = (state.playerName || '').trim();
       if (!name) {
         alert('No username found — start a new game.');
         return;
       }
 
+      isSubmitting = true;
+      const submitBtn = document.getElementById('btn-submit-score');
+      submitBtn.disabled = true;
       try {
         const res = await fetch('/api/scores', {
           method: 'POST',
@@ -1552,6 +1557,9 @@
       } catch (err) {
         console.error('Submit failed:', err);
         alert('Failed to submit score');
+      } finally {
+        isSubmitting = false;
+        submitBtn.disabled = false;
       }
     }
 
