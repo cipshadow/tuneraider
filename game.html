@@ -837,6 +837,20 @@
       box-shadow: 0 0 10px rgba(139, 172, 15, 0.5);
     }
 
+    .username-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1001;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .username-modal-overlay.active {
+      display: flex;
+    }
+
     /* Design system overrides for game context */
     .gb-bulbs {
       border: none;
@@ -996,9 +1010,9 @@
     </div>
 
     <!-- MODAL: Username Prompt -->
-    <div id="username-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 1001; display: flex; align-items: center; justify-content: center;">
+    <div id="username-modal" class="username-modal-overlay">
       <div class="modal-content" style="max-width: 400px;">
-        <h3 style="margin-bottom: 1.5rem;">ENTER YOUR NAME</h3>
+        <h3 style="margin-bottom: 1.5rem;">ENTER USERNAME</h3>
         <div class="input-group">
           <input type="text" id="username-input" maxlength="20" placeholder="YOUR NAME..." autofocus>
         </div>
@@ -1484,7 +1498,7 @@
     btnModalStart.addEventListener('click', () => {
       closeModal();
       // Show username modal instead of starting game directly
-      document.getElementById('username-modal').style.display = 'flex';
+      document.getElementById('username-modal').classList.add('active');
       document.getElementById('username-input').focus();
     });
 
@@ -1492,7 +1506,7 @@
       const username = document.getElementById('username-input').value.trim();
       if (username) {
         state.playerName = username;
-        document.getElementById('username-modal').style.display = 'none';
+        document.getElementById('username-modal').classList.remove('active');
         startGame();
       } else {
         document.getElementById('username-input').placeholder = 'PLEASE ENTER NAME';
