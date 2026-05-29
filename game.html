@@ -1106,6 +1106,11 @@
         if (notesInterval) clearInterval(notesInterval);
         notesInterval = setInterval(createFloatingNote, 300);
 
+        // Show answer buttons after a short delay
+        setTimeout(() => {
+          revealAnswers();
+        }, 500);
+
         // Play MIDI (full duration)
         await player.playMIDI(currentMidiBuffer);
 
@@ -1323,11 +1328,6 @@
       volumeSlider.value = Math.min(100, parseFloat(volumeSlider.value) + 10);
       updateVolume();
     });
-
-    // Show answer buttons on screen load
-    setTimeout(() => {
-      revealAnswers();
-    }, 500);
 
     // Init
     loadLeaderboardPreview();
