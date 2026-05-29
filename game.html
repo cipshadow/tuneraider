@@ -118,11 +118,13 @@
     }
 
     .game-header-title {
-      font-size: 1rem;
-      letter-spacing: 1px;
-      color: var(--gb-green);
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      color: var(--gb-cream);
       flex: 1;
       text-align: center;
+      text-shadow: 2px 2px 0 #0a280a;
+      font-weight: bold;
     }
 
     .game-header-controls {
@@ -358,10 +360,8 @@
 
     .now-playing {
       text-align: center;
-      padding: 0.5rem 0;
-      font-size: 2rem;
+      padding: 0;
       position: relative;
-      height: 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -952,7 +952,7 @@
         </div>
 
         <div id="now-playing" class="now-playing">
-          <span class="gb-note" style="font-size:1.5rem; animation: pulse 0.8s infinite;">♫</span>
+          <div class="gb-bulbs" id="now-playing-bulbs"></div>
         </div>
 
         <div class="current-points-display">
@@ -1060,7 +1060,7 @@
     import { GameBoyPlayer } from './src-v2/core/GameBoyPlayer.ts';
     import { SONGS } from './src-v2/data/songs.ts';
     import { getNormalizationGain } from './src-v2/data/songs-normalization.ts';
-    import { fireCorrect, fireWrong, initVolumeMeter, setMelodyPlaying } from './src-v2/tuneraider.js';
+    import { fireCorrect, fireWrong, initVolumeMeter, setMelodyPlaying, initMarquee } from './src-v2/tuneraider.js';
 
     const state = {
       songs: [...SONGS],
@@ -1237,6 +1237,10 @@
         // Start floating notes animation
         if (notesInterval) clearInterval(notesInterval);
         notesInterval = setInterval(createFloatingNote, 300);
+
+        // Initialize marquee bulb chase
+        const bulbsContainer = document.getElementById('now-playing-bulbs');
+        if (bulbsContainer) initMarquee(bulbsContainer);
 
         // Show answer buttons after a short delay
         setTimeout(() => {
