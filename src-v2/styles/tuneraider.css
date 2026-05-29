@@ -287,6 +287,37 @@
   .gb-eq i { animation: none; transform: scaleY(0.55); }
 }
 
+/* ---- Marquee chase — multicolor "now playing" bulb runner ----
+   CSS-driven, ~120 BPM. Build bars with initMarquee() (tuneraider.js). */
+.gb-bulbs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 14px;
+  height: 88px;
+  background: var(--bg-dark);
+  border: var(--border-thin);
+}
+.gb-bulb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 10px 1px var(--c);
+  opacity: 0.22;
+  animation: gb-bulb-chase 0.96s linear infinite;
+}
+@keyframes gb-bulb-chase {
+  0%   { opacity: 0.2; transform: scale(0.8); }
+  8%   { opacity: 1;   transform: scale(1.2); }
+  28%  { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 0.2; transform: scale(0.8); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gb-bulb { animation: none; opacity: 0.7; }
+}
+
 /* ============================================================
    LEADERBOARD
    ============================================================ */

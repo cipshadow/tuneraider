@@ -87,3 +87,21 @@ function clamp(v) { return Math.max(0, Math.min(100, v)); }
 export function setMelodyPlaying(eqEl, playing) {
   eqEl.classList.toggle('paused', !playing);
 }
+
+/* ---- Marquee chase bulbs ----
+   Fills a .gb-bulbs container with N colored bulbs that chase in a wave.
+   Pure CSS animation; this just builds the bars and stages the delays.  */
+export function initMarquee(el, { count = 9, colors } = {}) {
+  const COLORS = colors || [
+    '#ff2d2d', '#ff8a1e', '#ffd400', '#5dff3a',
+    '#00e5ff', '#2d7bff', '#ff5ecb', '#b46bff',
+  ];
+  el.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const b = document.createElement('i');
+    b.className = 'gb-bulb';
+    b.style.setProperty('--c', COLORS[i % COLORS.length]);
+    b.style.animationDelay = (i * 0.107).toFixed(3) + 's';  // chase wave
+    el.appendChild(b);
+  }
+}
