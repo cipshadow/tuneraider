@@ -1,5 +1,25 @@
 # TUNERAIDER Session Log
 
+## 2026-05-30 — Home swap, design-system components, first Vercel deploys
+
+Big session. Highlights (all committed; live at https://tuneraider.vercel.app):
+
+- **Fixed the stuck-round bug** (root cause: `startRound` wrote `.textContent` to HUD elements removed in a prior commit → null deref before the try/catch). Verified via headless Chrome (Playwright + system Chrome).
+- **Result-screen UX:** EXIT → small top-right chip; NEXT centered; fixed `+-1020` sign; dropped the post-game name re-prompt (reuse `state.playerName`); replaced the browser `alert()` rank popup with an in-game modal + hopping ASCII bunny (kept on the rank page per preference).
+- **Distinct result states:** wrong PICK now shows ✗ / WRONG! (was incorrectly showing TIME! / TIME'S UP!, which is now timeout-only).
+- **10th song** added (Dákiti); round count derives from the song list, so it's now 10 rounds.
+- **Home is now the game:** `index.html` IS the game (retired `game.html`; `/game` + `/game.html` still resolve). Removed all "chiptune" wording (UI + docs).
+- **Credits:** new styled `credits.html` crediting `b1rdmania/motif` (WARIO SYNTH engine); footer link; "8-bit" not "Game Boy" wording.
+- **Listen mode:** mobile-friendly (capped 600px, 3 cols → 2 on phones); ARCADE VU METER at top; song cards use 🌴; hidden backdoor (click last "S" in TOP SCORES) opens listen mode without playing.
+- **Design-system components** added to `tuneraider.css`/`tuneraider.js` + documented in `DESIGN_SYSTEM.md`: `.gb-vu` (`initVUMeter`), `.bunny-stage`/`.hop-arc`, and a new `.gb-disco` (`initDiscoGrid`, mounted small atop the result screen). Footer bunny ticker kept (namespaced `footer-bun-*`).
+- **Mobile answer cards:** re-enabled orbital motion (slower, ~13–16s) and capped width to 135px to cut overlap.
+- **Deployment stood up** via Stripe Projects CLI → Vercel (`stripe login` → `env --pull` → `vercel deploy --prod`). Gotcha: the Stripe-vended `VERCEL_TOKEN` expired mid-session; fix = `stripe projects rotate vercel-project` → `env --pull --yes` → redeploy.
+- Added `.env` to `.gitignore` (held the live token, was untracked).
+- `/security-review` (sub-agent): clean. `/code-review` (medium): only a double-submit risk (fixed with an `isSubmitting` guard) + cosmetic notes.
+- **Known issue:** Vercel build logs two non-blocking TS errors in `server/src/server.ts:195-196` (`catch (e)` unknown). Deploy still succeeds.
+
+See `PROJECT_OVERVIEW.md` for the comprehensive product/architecture/UX reference.
+
 ## Date: 2026-05-29
 
 ## 2026-05-29 (late) — Result-screen UX + 10th song
