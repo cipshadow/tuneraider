@@ -1291,10 +1291,12 @@
     function revealAnswers() {
       const arcadePanel = document.getElementById('arcade-panel');
 
-      // Pick 6 random songs from the 9 available (can repeat if needed)
-      const shuffledSongs = shuffle(state.songs).slice(0, 6);
+      // Ensure the current song is always an option, pick 5 others randomly
+      const otherSongs = state.songs.filter(s => s.title !== currentSong.title);
+      const randomOthers = shuffle(otherSongs).slice(0, 5);
+      const buttonSongs = shuffle([currentSong, ...randomOthers]);
 
-      arcadePanel.innerHTML = shuffledSongs.map(song => `
+      arcadePanel.innerHTML = buttonSongs.map(song => `
         <button class="answer-btn" data-title="${song.title}">
           ${song.title}
         </button>
