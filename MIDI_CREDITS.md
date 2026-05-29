@@ -4,15 +4,15 @@ The Game Boy chiptune versions of these Bad Bunny songs were synthesized from MI
 
 ## Songs in Library
 
-- **DtMF** — MIDI sourced from public MIDI databases
-- **Tití Me Preguntó** — MIDI sourced from public MIDI databases
-- **Callaíta** — MIDI by hesler, sourced from public MIDI databases
-- **Mónaco** — MIDI sourced from public MIDI databases
+- **DtMF** — MIDI by kvir-zzz
+- **Tití Me Preguntó** — MIDI transcription (uncredited)
+- **Callaíta** — MIDI by hes-ler
+- **Mónaco** — MIDI by hes-ler / alma-zedz
 - **Amorfoda** — MIDI sourced from public MIDI databases
-- **Mía** (feat. Drake) — MIDI sourced from public MIDI databases
-- **Moscow Mule** — MIDI sourced from public MIDI databases
-- **Baile Inolvidable** — MIDI sourced from public MIDI databases
-- **Efecto** — MIDI sourced from public MIDI databases
+- **Mía** (feat. Drake) — MIDI by phan-tom / jav-ster
+- **Moscow Mule** — MIDI by por-tal
+- **Baile Inolvidable** — MIDI by debra-yume
+- **Efecto** — MIDI by phan-tom / jav-ster
 
 ## Original Music
 
@@ -37,5 +37,9 @@ This game is created for:
 Please respect original artists' rights and support official Bad Bunny releases.
 
 ---
+
+## Audio & Curation
+
+**El Conejo Malo** — The music
 
 Special thanks to the MIDI transcription community for making these arrangements available.
