@@ -27,8 +27,8 @@ export default defineConfig({
         v2: resolve(__dirname, 'v2.html'),
         v2_test: resolve(__dirname, 'v2-test.html'),
         v2_diagnostic: resolve(__dirname, 'v2-diagnostic.html'),
-        // Game mode
-        game: resolve(__dirname, 'game.html'),
+        // Credits page
+        credits: resolve(__dirname, 'credits.html'),
       },
     },
   },

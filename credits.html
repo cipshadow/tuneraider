@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TUNERAIDER - Credits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      --bg-dark: #0f380f;
+      --bg-panel: #306230;
+      --gb-green: #9bbc0f;
+      --gb-light-green: #8bac0f;
+      --gb-cream: #e0f8d0;
+
+      background: var(--bg-dark);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        transparent 0px, transparent 2px,
+        rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 4px
+      );
+    }
+
+    .wrap { max-width: 680px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 2rem; text-shadow: 2px 2px 0 #0a280a; }
+    h1 { font-size: 1.4rem; letter-spacing: 3px; margin-bottom: 0.6rem; }
+    .sub { font-size: 0.65rem; color: var(--gb-light-green); letter-spacing: 1px; }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 4px solid var(--gb-light-green);
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--gb-cream);
+      border-bottom: 2px solid var(--gb-light-green);
+      padding-bottom: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    p { font-size: 0.7rem; color: var(--gb-cream); margin-bottom: 0.8rem; }
+    .dim { color: var(--gb-light-green); }
+
+    ul { list-style: none; }
+    li {
+      font-size: 0.68rem;
+      color: var(--gb-cream);
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed rgba(155, 188, 15, 0.25);
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    li:last-child { border-bottom: none; }
+    li .song { color: var(--gb-green); }
+    li .by { color: var(--gb-light-green); text-align: right; }
+
+    a { color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); }
+    a:hover { color: var(--gb-cream); border-bottom-color: var(--gb-cream); }
+
+    .highlight {
+      background: rgba(155, 188, 15, 0.08);
+      border-left: 3px solid var(--gb-green);
+      padding: 0.9rem 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .disclaimer { font-size: 0.62rem; line-height: 1.9; color: var(--gb-light-green); }
+    .disclaimer strong { color: var(--gb-cream); }
+
+    .back {
+      display: block;
+      max-width: 320px;
+      margin: 2rem auto 0;
+      text-align: center;
+      padding: 0.9rem 1rem;
+      background: var(--bg-dark);
+      border: 3px solid var(--gb-green);
+      color: var(--gb-green);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      border-bottom-width: 3px;
+    }
+    .back:hover { background: var(--gb-green); color: var(--bg-dark); }
+
+    footer { text-align: center; margin-top: 2.5rem; font-size: 0.6rem; color: var(--gb-light-green); line-height: 2; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>CREDITS</h1>
+      <p class="sub">TUNERAIDER • Bad Bunny • 8-Bit Music</p>
+    </header>
+
+    <div class="panel">
+      <h2>Built on</h2>
+      <div class="highlight">
+        <p>The Game Boy 8-bit sound engine and MIDI playback come from
+        <a href="https://github.com/b1rdmania/motif" target="_blank" rel="noopener">b1rdmania/motif</a>
+        (the WARIO SYNTH engine) by
+        <a href="https://x.com/b1rdmania" target="_blank" rel="noopener">@b1rdmania</a>.</p>
+        <p class="dim" style="margin-bottom:0;">TUNERAIDER is a quiz game built entirely on top of their synthesis work — none of this plays a note without it.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>MIDI transcriptions</h2>
+      <p class="dim">Each track was synthesized from a MIDI arrangement sourced from public MIDI libraries:</p>
+      <ul>
+        <li><span class="song">DtMF</span><span class="by">kvir-zzz</span></li>
+        <li><span class="song">Tití Me Preguntó</span><span class="by">uncredited</span></li>
+        <li><span class="song">Callaíta</span><span class="by">hes-ler</span></li>
+        <li><span class="song">Mónaco</span><span class="by">hes-ler / alma-zedz</span></li>
+        <li><span class="song">Amorfoda</span><span class="by">public MIDI databases</span></li>
+        <li><span class="song">Mía (feat. Drake)</span><span class="by">phan-tom / jav-ster</span></li>
+        <li><span class="song">Moscow Mule</span><span class="by">por-tal</span></li>
+        <li><span class="song">Baile Inolvidable</span><span class="by">debra-yume</span></li>
+        <li><span class="song">Efecto</span><span class="by">phan-tom / jav-ster</span></li>
+        <li><span class="song">Dákiti</span><span class="by">public MIDI databases</span></li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>Original music</h2>
+      <p>All original compositions are by <span style="color:var(--gb-green);">Bad Bunny</span> — El Conejo Malo — and the associated producers and songwriters.</p>
+      <p class="dim" style="margin-bottom:0;">Thanks to the MIDI transcription community for making these arrangements available.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Disclaimer</h2>
+      <p class="disclaimer">
+        <strong>Educational &amp; non-commercial use only.</strong><br/>
+        This project synthesizes existing MIDI arrangements into 8-bit Game Boy audio for learning and entertainment. It includes no original recordings — only MIDI-to-8-bit synthesis. Not for sale, monetization, or redistribution without attribution. Please support official Bad Bunny releases.
+      </p>
+    </div>
+
+    <a class="back" href="/">▶ BACK TO GAME</a>
+
+    <footer>
+      TUNERAIDER v1.0<br/>
+      Engine: <a href="https://github.com/b1rdmania/motif" target="_blank" rel="noopener">b1rdmania/motif</a>
+    </footer>
+  </div>
+</body>
+</html>

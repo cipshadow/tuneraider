@@ -1,6 +1,10 @@
 # MIDI File Credits
 
-The Game Boy chiptune versions of these Bad Bunny songs were synthesized from MIDI files sourced from the following:
+The Game Boy 8-bit versions of these Bad Bunny songs were synthesized from MIDI files sourced from the following:
+
+## Sound Engine
+
+The Game Boy 8-bit synthesis engine and MIDI playback are from **[b1rdmania/motif](https://github.com/b1rdmania/motif)** (the WARIO SYNTH engine) by [@b1rdmania](https://x.com/b1rdmania). TUNERAIDER builds entirely on top of their synthesis work.
 
 ## Songs in Library
 
@@ -22,7 +26,7 @@ All original compositions are by **Bad Bunny** and associated producers/songwrit
 
 **Educational & Non-Commercial Use Only**
 
-This project synthesizes existing MIDI arrangements into 8-bit retro audio for educational and non-commercial purposes only. The MIDI files are sourced from public MIDI libraries. 
+This project synthesizes existing MIDI arrangements into 8-bit Game Boy audio for educational and non-commercial purposes only. The MIDI files are sourced from public MIDI libraries. 
 
 This game is created for:
 - Educational demonstration of music synthesis and interactive design

@@ -1,12 +1,12 @@
-# TUNERAIDER — Game Boy Chiptune Quiz
+# TUNERAIDER — Game Boy Quiz
 
 **GitHub**: https://github.com/cipshadow/tuneraider  
-**Live**: [localhost:3000/game.html](http://localhost:3000/game.html)  
+**Live**: [localhost:3000](http://localhost:3000)  
 **Creator**: cipshadow  
 
 ## Project Overview
 
-A **dexterity-based chiptune quiz game** that converts Bad Bunny MIDI files into Game Boy 8-bit audio in the browser. Players identify songs by ear, earning points based on speed. Global leaderboard powered by Redis.
+A **dexterity-based music quiz game** that converts Bad Bunny MIDI files into Game Boy 8-bit audio in the browser. Players identify songs by ear, earning points based on speed. Global leaderboard powered by Redis.
 
 ## Tech Stack
 
@@ -65,7 +65,7 @@ Backend uses Vite proxy: `/api/*` → localhost:3001
 
 ```
 .
-├── game.html              # Quiz game (new)
+├── index.html             # Quiz game (home)
 ├── v2.html                # Gallery/listen mode
 ├── src-v2/                # v2 synthesis engine
 │   ├── core/GameBoyPlayer.ts

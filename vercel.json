@@ -56,7 +56,11 @@
     },
     {
       "src": "/game",
-      "dest": "/game.html"
+      "dest": "/index.html"
+    },
+    {
+      "src": "/credits",
+      "dest": "/credits.html"
     },
     { "handle": "filesystem" },
     {

@@ -1,6 +1,6 @@
-# TUNERAIDER — Bad Bunny Game Boy Chiptune Quiz
+# TUNERAIDER — Bad Bunny Game Boy Quiz
 
-A Game Boy-style chiptune quiz game where players identify Bad Bunny songs by listening to 8-bit synthesized versions and earn points based on speed.
+A Game Boy-style music quiz game where players identify Bad Bunny songs by listening to 8-bit synthesized versions and earn points based on speed.
 
 **Live**: https://tuneraider.vercel.app  
 **GitHub**: https://github.com/cipshadow/tuneraider  
@@ -10,7 +10,7 @@ A Game Boy-style chiptune quiz game where players identify Bad Bunny songs by li
 
 ## Game Overview
 
-- **9 Bad Bunny songs** converted to Game Boy 8-bit chiptune audio
+- **9 Bad Bunny songs** converted to Game Boy 8-bit audio
 - **Arcade-style gameplay**: 9 rounds, 6 random buttons per round
 - **Scoring system**:
   - ✅ Correct answer: 1000 points at 1s, 0 points at 30s (linear)
@@ -70,7 +70,7 @@ npm run dev              # Vite on :3000
 npm run dev:backend     # Backend on :3001 (in server/)
 ```
 
-Open http://localhost:3000/game.html
+Open http://localhost:3000
 
 ---
 
@@ -82,24 +82,24 @@ Open http://localhost:3000/game.html
 ### Music
 - **Original compositions**: Bad Bunny (Sony Music, Rimas Entertainment)
 - **MIDI transcriptions**: Various transcribers via public MIDI databases (see `MIDI_CREDITS.md`)
-- **Game design & chiptune quiz concept**: @cipshadow
+- **Game design & quiz concept**: @cipshadow
 
 ---
 
 ## Legal & Disclaimers ⚠️
 
 ### Educational Use Only
-This project is created for **educational and entertainment purposes only**. It synthesizes existing MIDI arrangements into Game Boy-style chiptune audio.
+This project is created for **educational and entertainment purposes only**. It synthesizes existing MIDI arrangements into Game Boy-style 8-bit audio.
 
 ### Copyright Notice
 - Bad Bunny songs are copyrighted by their respective copyright holders (Sony Music, Rimas Entertainment, Bad Bunny)
 - MIDI files are transcriptions of copyrighted works from public MIDI databases
-- This game does NOT include original audio files, only synthesized MIDI-to-chiptune conversions
+- This game does NOT include original audio files, only synthesized MIDI-to-8-bit conversions
 
 ### Fair Use Statement
-Use of MIDI transcriptions and chiptune synthesis falls under **fair use** for:
+Use of MIDI transcriptions and 8-bit synthesis falls under **fair use** for:
 - Educational demonstration of music synthesis techniques
-- Non-commercial transformative work (Game Boy chiptune conversion)
+- Non-commercial transformative work (Game Boy 8-bit conversion)
 - Personal/non-commercial entertainment
 
 ### Limitations
@@ -140,4 +140,4 @@ MIT License (code only) — **The music content and MIDI files are NOT MIT licen
 
 ---
 
-**Enjoy identifying the chiptunes!** 🎮♪
+**Enjoy identifying the songs!** 🎮♪
