@@ -52,7 +52,18 @@ type SharePayload =
 
 const localShareStore = new Map<string, SharePayload>();
 const isVercel = Boolean(process.env.VERCEL);
-const hasKvEnv = Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+const upstashUrl = process.env.UPSTASH_REST_URL || process.env.KV_REST_API_URL || '';
+const upstashToken = process.env.UPSTASH_REST_TOKEN || process.env.KV_REST_API_TOKEN || '';
+const hasKvEnv = Boolean(upstashUrl && upstashToken);
+
+async function upstash(command: string[]): Promise<any> {
+  const res = await fetch(`${upstashUrl}/${command.map(encodeURIComponent).join('/')}`, {
+    headers: { Authorization: `Bearer ${upstashToken}` },
+  });
+  const data = await res.json() as { result: any; error?: string };
+  if (data.error) throw new Error(data.error);
+  return data.result;
+}
 const redisUrl = process.env.REDIS_URL;
 const hasRedisEnv = Boolean(redisUrl);
 
@@ -103,9 +114,8 @@ async function shareSet(code: string, payload: SharePayload): Promise<void> {
     return;
   }
 
-  // Fallback: Vercel KV REST (Upstash)
   if (hasKvEnv) {
-    await kv.set(key, payload, { ex: exSec });
+    await upstash(['set', key, JSON.stringify(payload), 'EX', String(exSec)]);
     return;
   }
 
@@ -127,8 +137,9 @@ async function shareGet(code: string): Promise<SharePayload | null> {
   }
 
   if (hasKvEnv) {
-    const val = await kv.get<SharePayload>(key);
-    return val ?? null;
+    const val = await upstash(['get', key]);
+    if (!val) return null;
+    return (typeof val === 'string' ? JSON.parse(val) : val) as SharePayload;
   }
 
   return localShareStore.get(code) ?? null;
@@ -154,9 +165,9 @@ async function leaderboardSet(member: string, score: number): Promise<{ rank: nu
   }
 
   if (hasKvEnv) {
-    await kv.zadd(key, { score, member });
-    const rank = (await kv.zrevrank(key, member)) ?? -1;
-    const total = (await kv.zcard(key)) ?? 0;
+    await upstash(['zadd', key, String(score), member]);
+    const rank: number = (await upstash(['zrevrank', key, member])) ?? -1;
+    const total: number = (await upstash(['zcard', key])) ?? 0;
     return { rank: rank + 1, total };
   }
 
@@ -190,17 +201,20 @@ async function leaderboardGet(): Promise<Array<{ rank: number; name: string; sco
   }
 
   if (hasKvEnv) {
-    const entries = await kv.zrange(key, 0, 9, { rev: true, withScores: true });
-    return entries.map((e, i) => {
-      const [name, timestamp] = (typeof e === 'string' ? e : e.member).split('|||');
-      const score = typeof e === 'string' ? 0 : (e.score || 0);
-      return {
-        rank: i + 1,
+    // Returns flat array [member, score, member, score, ...]
+    const flat: string[] = await upstash(['zrange', key, '0', '9', 'withscores', 'rev']);
+    const results = [];
+    for (let i = 0; i < flat.length; i += 2) {
+      const [name, timestamp] = flat[i].split('|||');
+      const score = parseFloat(flat[i + 1]);
+      results.push({
+        rank: results.length + 1,
         name: name || 'Anonymous',
         score: Math.round(score),
         date: new Date(parseInt(timestamp || '0')).toISOString(),
-      };
-    });
+      });
+    }
+    return results;
   }
 
   // Local fallback
@@ -408,13 +422,10 @@ app.post('/api/scores', async (req, res) => {
   try {
     const body = (req.body || {}) as any;
     const name = typeof body.name === 'string' ? body.name.trim().slice(0, 20) : '';
-    const score = typeof body.score === 'number' ? Math.max(0, Math.floor(body.score)) : 0;
+    const score = typeof body.score === 'number' ? Math.floor(body.score) : 0;
 
     if (!name) {
       return res.status(400).json({ error: 'Name is required' });
-    }
-    if (score < 0) {
-      return res.status(400).json({ error: 'Score must be non-negative' });
     }
 
     const sanitizedName = escapeHtml(name);
@@ -425,6 +436,41 @@ app.post('/api/scores', async (req, res) => {
   } catch (error) {
     console.error('Score post error:', error);
     res.status(500).json({ error: 'Failed to save score' });
+  }
+});
+
+// One-time migration: add 10000 to every score to match the new starting score baseline.
+// Safe to call multiple times only if you add a guard — call it exactly once then remove.
+app.post('/api/migrate-scores-add10k', async (req, res) => {
+  const BUMP = 10000;
+  try {
+    const key = 'leaderboard';
+
+    if (hasRedisEnv) {
+      const r = await getRedis();
+      const all = await r.zRangeWithScores(key, 0, -1);
+      if (all.length === 0) return res.json({ migrated: 0 });
+      await r.zAdd(key, all.map(e => ({ value: e.value, score: e.score + BUMP })));
+      return res.json({ migrated: all.length });
+    }
+
+    if (hasKvEnv) {
+      const all = await kv.zrange(key, 0, -1, { withScores: true });
+      if (!all || all.length === 0) return res.json({ migrated: 0 });
+      const pairs: Array<{ score: number; member: string }> = [];
+      for (let i = 0; i < all.length; i += 2) {
+        pairs.push({ member: all[i] as string, score: (all[i + 1] as number) + BUMP });
+      }
+      for (const p of pairs) await kv.zadd(key, { score: p.score, member: p.member });
+      return res.json({ migrated: pairs.length });
+    }
+
+    // Local fallback
+    localLeaderboard.forEach(e => { e.score += BUMP; });
+    return res.json({ migrated: localLeaderboard.length });
+  } catch (error) {
+    console.error('Migration error:', error);
+    res.status(500).json({ error: 'Migration failed' });
   }
 });
 

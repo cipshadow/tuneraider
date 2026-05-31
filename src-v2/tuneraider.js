@@ -121,20 +121,73 @@ export function initVUMeter(el, { count = 14 } = {}) {
 }
 
 /* ---- Disco grid ----
-   Fills a .gb-disco container with rows×cols cells that flash in random
-   palette colors on staggered loops — a Game Boy disco floor.          */
-export function initDiscoGrid(el, { rows = 3, cols = 8, colors } = {}) {
+   When an AnalyserNode is provided the cells react to real audio energy
+   (frequency bands drive rows, beat transients flash the whole grid).
+   Without an analyser it falls back to the original CSS animation loop. */
+export function initDiscoGrid(el, { rows = 3, cols = 8, colors, analyser } = {}) {
   const COLORS = colors || [
     '#ff2d2d', '#ff8a1e', '#ffd400', '#5dff3a',
     '#00e5ff', '#2d7bff', '#ff5ecb', '#b46bff',
   ];
   el.style.setProperty('--cols', cols);
   el.innerHTML = '';
+  const cells = [];
   for (let i = 0; i < rows * cols; i++) {
     const cell = document.createElement('div'); cell.className = 'cell';
     cell.style.setProperty('--c', COLORS[Math.floor(Math.random() * COLORS.length)]);
-    cell.style.animationDuration = (0.9 + Math.random() * 1.2).toFixed(2) + 's';
-    cell.style.animationDelay = (-Math.random() * 1.5).toFixed(2) + 's';
+    if (!analyser) {
+      cell.style.animationDuration = (0.9 + Math.random() * 1.2).toFixed(2) + 's';
+      cell.style.animationDelay = (-Math.random() * 1.5).toFixed(2) + 's';
+    } else {
+      cell.style.animationDuration = '0s'; // disable CSS loop; JS drives it
+    }
     el.appendChild(cell);
+    cells.push(cell);
   }
+
+  if (!analyser) return;
+
+  // Stop any previous RAF loop on this element
+  if (el._discoRaf) cancelAnimationFrame(el._discoRaf);
+
+  const freqData = new Uint8Array(analyser.frequencyBinCount);
+  const bandSize = Math.floor(analyser.frequencyBinCount / cols);
+  let prevEnergy = 0;
+
+  function frame() {
+    el._discoRaf = requestAnimationFrame(frame);
+    analyser.getByteFrequencyData(freqData);
+
+    // Split frequency spectrum into `cols` bands
+    const bands = [];
+    for (let c = 0; c < cols; c++) {
+      let sum = 0;
+      for (let b = 0; b < bandSize; b++) sum += freqData[c * bandSize + b];
+      bands.push(sum / bandSize / 255); // 0..1
+    }
+
+    // Beat detection: sudden energy spike across all bands
+    const totalEnergy = bands.reduce((a, v) => a + v, 0) / cols;
+    const isBeat = totalEnergy > prevEnergy * 1.3 && totalEnergy > 0.15;
+    prevEnergy = prevEnergy * 0.85 + totalEnergy * 0.15; // smooth
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const cell = cells[r * cols + c];
+        // Each row responds to a different frequency band with row offset
+        const bandIdx = (c + r * 2) % cols;
+        const energy = bands[bandIdx];
+        const lit = isBeat || energy > 0.25 + r * 0.08;
+        if (lit) {
+          cell.style.setProperty('--c', COLORS[Math.floor(Math.random() * COLORS.length)]);
+          cell.style.opacity = '1';
+          cell.style.filter = `brightness(${1.2 + energy})`;
+        } else {
+          cell.style.opacity = (0.15 + energy * 0.5).toFixed(2);
+          cell.style.filter = 'brightness(0.4)';
+        }
+      }
+    }
+  }
+  frame();
 }

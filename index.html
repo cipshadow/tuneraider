@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TUNERAIDER - Bad Bunny Game Boy Quiz</title>
+  <title>TUNERAIDERZ - Bad Bunny Game Boy Quiz</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -265,10 +265,47 @@
     }
 
     .modal-content h3 {
-      font-size: 0.85rem;
-      color: var(--gb-green);
-      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      color: var(--gb-cream);
+      margin-bottom: 1.75rem;
       letter-spacing: 1px;
+      text-align: center;
+      text-shadow: 2px 2px 0 #0a280a;
+    }
+
+    /* How-to-play step: numbered chapter + body */
+    .howto-step {
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      text-align: left;
+      margin-bottom: 1.4rem;
+    }
+
+    .howto-num {
+      flex-shrink: 0;
+      background: var(--gb-green);
+      color: var(--bg-dark);
+      font-size: 0.85rem;
+      line-height: 1;
+      padding: 0.4rem 0.55rem;
+      letter-spacing: 1px;
+    }
+
+    .howto-title {
+      color: var(--gb-green);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      line-height: 1.4;
+      margin-bottom: 0.6rem;
+    }
+
+    .modal-content p.howto-text {
+      color: var(--gb-cream);
+      font-size: 0.68rem;
+      line-height: 1.7;
+      margin: 0;
+      text-align: left;
     }
 
     .modal-content p {
@@ -567,7 +604,7 @@
 
     .answer-btn {
       padding: 1.5rem 1rem;
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       border: 3px solid var(--gb-green);
       background: var(--bg-dark);
       color: var(--gb-green);
@@ -760,6 +797,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
+      align-items: stretch;
     }
 
     .song-card {
@@ -771,6 +809,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+      height: 100%;
     }
 
     .song-card:hover {
@@ -1098,12 +1137,12 @@
       }
 
       .answer-btn {
-        padding: 1rem 0.5rem;
-        font-size: 0.5rem;
-        min-height: 60px;
+        padding: 0.85rem 0.35rem;
+        font-size: 0.58rem;
+        min-height: 58px;
         border: 2px solid var(--gb-green);
         width: 100%;
-        max-width: 135px;
+        max-width: 125px;
         justify-self: center;
       }
 
@@ -1148,22 +1187,31 @@
       .modal-content {
         padding: 1.5rem;
         max-height: 90vh;
-        font-size: 0.6rem;
+        font-size: 0.8rem;
       }
 
       .modal-content h3 {
-        font-size: 0.75rem;
-        margin-bottom: 1rem;
+        font-size: 1rem;
+        margin-bottom: 1.25rem;
       }
 
-      .modal-content p {
-        margin-bottom: 0.75rem;
+      .howto-title {
+        font-size: 0.85rem;
+      }
+
+      .modal-content p.howto-text {
+        font-size: 0.72rem;
+        line-height: 1.7;
+      }
+
+      .howto-num {
+        font-size: 0.85rem;
       }
 
       .modal-cta {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.55rem;
-        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.7rem;
+        margin-top: 1.25rem;
       }
 
       .btn-primary {
@@ -1235,9 +1283,10 @@
       }
 
       .answer-btn {
-        min-height: 50px;
-        padding: 0.75rem 0.5rem;
-        font-size: 0.48rem;
+        min-height: 54px;
+        padding: 0.6rem 0.3rem;
+        font-size: 0.64rem;
+        max-width: 118px;
       }
 
       .home-section {
@@ -1252,23 +1301,61 @@
         font-size: 0.8rem;
         padding: 0.5rem;
       }
+
+      .modal-content {
+        padding: 1.25rem;
+        font-size: 0.85rem;
+      }
+
+      .modal-content h3 {
+        font-size: 1.05rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .howto-step {
+        gap: 0.7rem;
+        margin-bottom: 1.1rem;
+      }
+
+      .howto-title {
+        font-size: 0.88rem;
+        margin-bottom: 0.45rem;
+      }
+
+      .modal-content p.howto-text {
+        font-size: 0.74rem;
+        line-height: 1.65;
+      }
+
+      .howto-num {
+        font-size: 0.88rem;
+        padding: 0.4rem 0.55rem;
+      }
+
+      .btn-primary {
+        padding: 1rem 1.2rem;
+        font-size: 0.9rem;
+      }
+
+      .result-icon {
+        font-size: 2.5rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>TUNERAIDER</h1>
+      <h1>TUNERAIDERZ</h1>
       <p class="subtitle">Bad Bunny Edition</p>
     </header>
 
     <!-- HOME SCREEN -->
     <div id="screen-home" class="screen active">
       <div class="home-section">
-        <!-- INSERT COIN Panel -->
         <div class="panel">
           <p style="text-align: center; margin-bottom: 1.5rem; color: var(--gb-light-green); font-size: 0.75rem;">
-            <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
+            <span class="blink">▶</span> VAMOS! <span class="blink">◀</span>
           </p>
           <button class="btn-primary" id="btn-play-game">🕹️ PLAY GAME</button>
           <button class="btn-primary" id="btn-listen">🎧 LISTEN MODE</button>
@@ -1287,7 +1374,7 @@
       <!-- Footer -->
       <div class="home-footer">
         <div class="footer-bunny-track"><span class="footer-bunny-mover"><span class="footer-bunny" aria-hidden="true">🐰</span></span></div>
-        <div style="margin-bottom: 1rem;">TUNERAIDER v1.0 • ChipChop Inc.</div>
+        <div style="margin-bottom: 1rem;">TUNERAIDERZ v1.0 • ChipChop Inc.</div>
         <a href="/credits.html" class="credits-link" style="color: var(--gb-green); text-decoration: none; border-bottom: 1px solid var(--gb-green); padding-bottom: 0.2rem;">Credits</a>
       </div>
     </div>
@@ -1298,15 +1385,39 @@
         <button class="modal-close" id="modal-close">✕</button>
         <h3>How to Play</h3>
 
-        <p><strong>Listen &amp; tap.</strong><br/>A Bad Bunny track plays in 8-bit. Hit its title from the moving buttons.</p>
+        <div class="howto-step">
+          <span class="howto-num">1</span>
+          <div>
+            <div class="howto-title">Listen &amp; tap</div>
+            <p class="howto-text">A Bad Bunny track plays in 8-bit. Hit its title from the moving buttons.</p>
+          </div>
+        </div>
 
-        <p><strong>Speed wins.</strong><br/>The sooner you pick, the more points. Trust your ear.</p>
+        <div class="howto-step">
+          <span class="howto-num">2</span>
+          <div>
+            <div class="howto-title">Speed wins</div>
+            <p class="howto-text">The sooner you pick, the more points. Trust your ear.</p>
+          </div>
+        </div>
 
-        <p><strong>Misses hurt.</strong><br/>Wrong guesses cost you—and the longer you stall, the worse it stings.</p>
+        <div class="howto-step">
+          <span class="howto-num">3</span>
+          <div>
+            <div class="howto-title">Misses hurt</div>
+            <p class="howto-text">Wrong guesses cost you, and the longer you stall, the worse it stings.</p>
+          </div>
+        </div>
 
-        <p><strong>10 rounds.</strong><br/>The song plays on after each pick, so keep listening. Top the leaderboard.</p>
+        <div class="howto-step">
+          <span class="howto-num">4</span>
+          <div>
+            <div class="howto-title">10 rounds</div>
+            <p class="howto-text">The song plays on after each pick, so keep listening. Top the leaderboard.</p>
+          </div>
+        </div>
 
-        <button class="modal-cta" id="btn-modal-start">▶ INSERT COIN TO START</button>
+        <button class="modal-cta" id="btn-modal-start">▶ START GAME</button>
       </div>
     </div>
 
@@ -1348,7 +1459,7 @@
             <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
           </div>
           <button class="gb-btn" data-vol="up" style="padding:0.3rem 0.5rem; font-size:0.65rem">+</button>
-          <span class="gb-vol-val" id="vol-val" style="font-size:0.6rem; min-width: 30px;">70%</span>
+          <span class="gb-vol-val" id="vol-val" style="font-size:0.6rem; min-width: 30px;">90%</span>
         </div>
 
         <!-- Exit Button (Right) -->
@@ -1357,7 +1468,7 @@
 
       <!-- Game Header (Centered) -->
       <div class="game-header">
-        <h1>TUNERAIDER: ROUND <span id="round-num-title">1</span></h1>
+        <h1>TUNERAIDERZ: ROUND <span id="round-num-title">1</span></h1>
       </div>
 
       <!-- Marquee (between header and panel) -->
@@ -1435,7 +1546,7 @@
           Playing as <span id="gameover-name" style="color: var(--gb-cream);">PLAYER</span>
         </div>
 
-        <button class="btn-primary" id="btn-submit-score">SUBMIT SCORE</button>
+        <div id="rank-saving" style="text-align:center; font-size:0.65rem; color:var(--gb-light-green); margin: 0.5rem 0;">Saving score...</div>
 
         <div class="button-row" style="margin-top: 1rem;">
           <button id="btn-play-again">PLAY AGAIN</button>
@@ -1464,7 +1575,7 @@
     <!-- LISTEN MODE SCREEN -->
     <div id="screen-listen" class="screen">
       <div class="vu-meter">
-        <div class="vu-title">♪ ARCADE VU METER</div>
+        <div class="vu-title">♪ ARCADE METER</div>
         <div class="gb-vu" id="listen-vu" aria-hidden="true"></div>
       </div>
       <div class="panel">
@@ -1480,12 +1591,31 @@
     import { SONGS } from './src-v2/data/songs.ts';
     import { getNormalizationGain } from './src-v2/data/songs-normalization.ts';
     import { fireCorrect, fireWrong, initVolumeMeter, setMelodyPlaying, initMarquee, initVUMeter, initDiscoGrid } from './src-v2/tuneraider.js';
+    import { playCoin, playError } from './src-v2/audio/sfx.ts';
+    import { initAnalytics, track } from './src-v2/analytics.ts';
+    initAnalytics();
+
+    if (!localStorage.getItem('tr_visited')) {
+      track('first_visit');
+      localStorage.setItem('tr_visited', '1');
+    }
+
+    // Track session abandonment mid-game
+    window.addEventListener('beforeunload', () => {
+      if (state && state.round > 0 && state.round < state.shuffled.length && !state.isAnswered === false) {
+        track('game_abandoned', { round: state.round, score: state.score, total_rounds: state.shuffled.length });
+      }
+    });
+
+    // Track listen-mode song previews — record start time, fire event on next click / back
+    let listenSongStart = null;
+    let listenSongTitle = null;
 
     const state = {
       songs: [...SONGS],
       shuffled: [],
       round: 0,
-      score: 0,
+      score: 10000,
       timerStart: 0,
       snippetTimeout: null,
       isAnswered: false,
@@ -1616,15 +1746,19 @@
       const otherSongs = state.songs.filter(s => s.title !== 'DtMF');
       state.shuffled = dtmfSong ? [dtmfSong, ...shuffle(otherSongs)] : shuffle(state.songs);
       state.round = 0;
-      state.score = 0;
+      state.score = 10000;
+      track('game_started', { player: state.playerName, total_rounds: state.shuffled.length });
       startRound(0);
     }
 
     async function startRound(index) {
       if (index >= state.shuffled.length) {
+        track('game_completed', { player: state.playerName, score: state.score, total_rounds: state.shuffled.length });
         showScreen('gameover');
         document.getElementById('final-score').textContent = state.score;
         document.getElementById('gameover-name').textContent = state.playerName || 'PLAYER';
+        document.getElementById('rank-saving').textContent = 'Saving score...';
+        submitScore();
         return;
       }
 
@@ -1716,14 +1850,24 @@
         points = Math.round(-(1000 + (clamped / 60) * 1000));
       }
 
+      track('answer_submitted', {
+        correct: isCorrect,
+        song: currentSong.title,
+        points,
+        elapsed_s: Math.round(clamped),
+        round: state.round,
+      });
+
       if (btn) {
         btn.classList.add(isCorrect ? 'correct' : 'wrong');
 
         // Fire celebration or error burst
         if (isCorrect) {
           fireCorrect('WEPA');
+          playCoin();
         } else {
           fireWrong('NOOO');
+          playError();
         }
 
         setTimeout(() => {
@@ -1733,14 +1877,31 @@
       } else {
         // Timed out
         fireWrong('NOOO');
+        playError();
         state.score += 0;
         showResult(false, 0, currentSong.title, 30);
       }
     }
 
+    let resultLoopInterval = null;
+    function startResultLoop() {
+      if (resultLoopInterval) clearInterval(resultLoopInterval);
+      resultLoopInterval = setInterval(async () => {
+        if (!player.isPlaying() && currentMidiBuffer) {
+          await player.playMIDI(currentMidiBuffer);
+          updateVolume();
+        }
+      }, 1000);
+    }
+    function stopResultLoop() {
+      if (resultLoopInterval) { clearInterval(resultLoopInterval); resultLoopInterval = null; }
+    }
+
     function showResult(isCorrect, points, correctTitle, elapsed, timedOut = false) {
       showScreen('result');
-      initDiscoGrid(document.getElementById('result-disco'), { rows: 3, cols: 8 });
+      startResultLoop();
+      const analyser = player.getAPU().getAnalyserNode();
+      initDiscoGrid(document.getElementById('result-disco'), { rows: 3, cols: 8, analyser });
       let icon, iconColor, text;
       if (isCorrect) {
         icon = '✓'; iconColor = 'var(--gb-cream)'; text = 'CORRECT!';
@@ -1764,16 +1925,22 @@
         <div class="song-card" data-url="${song.midiUrl}">
           <div class="cover">🌴</div>
           <div class="title">${song.title}</div>
-          <div class="artist">${song.artist}</div>
         </div>
       `).join('');
 
       grid.querySelectorAll('.song-card').forEach(card => {
         card.addEventListener('click', async () => {
+          // Fire listen_ended for the previous song before starting the next
+          if (listenSongTitle && listenSongStart) {
+            track('song_listened', { song: listenSongTitle, duration_s: Math.round((Date.now() - listenSongStart) / 1000) });
+          }
+          const songTitle = card.querySelector('.title').textContent;
+          listenSongTitle = songTitle;
+          listenSongStart = Date.now();
+          track('song_previewed', { song: songTitle });
           try {
             const res = await fetch(card.dataset.url);
             const buf = await res.arrayBuffer();
-            const songTitle = card.querySelector('.title').textContent;
             currentSong = { title: songTitle };
             await player.resume();
             updateVolume();
@@ -1787,16 +1954,11 @@
 
     let isSubmitting = false;
     async function submitScore() {
-      if (isSubmitting) return; // guard against double-submit while POST is in flight
+      if (isSubmitting) return;
       const name = (state.playerName || '').trim();
-      if (!name) {
-        alert('No username found — start a new game.');
-        return;
-      }
-
+      if (!name) return;
       isSubmitting = true;
-      const submitBtn = document.getElementById('btn-submit-score');
-      submitBtn.disabled = true;
+      const statusEl = document.getElementById('rank-saving');
       try {
         const res = await fetch('/api/scores', {
           method: 'POST',
@@ -1805,19 +1967,19 @@
         });
         const data = await res.json();
         if (data.error) {
-          alert('Error: ' + data.error);
+          if (statusEl) statusEl.textContent = 'Score not saved.';
           return;
         }
-
+        track('score_submitted', { player: name, score: state.score, rank: data.rank, total_players: data.total });
+        if (statusEl) statusEl.textContent = `Rank #${data.rank} of ${data.total}`;
         document.getElementById('rank-pos').textContent = data.rank;
         document.getElementById('rank-total').textContent = data.total;
         document.getElementById('rank-modal').classList.add('active');
       } catch (err) {
         console.error('Submit failed:', err);
-        alert('Failed to submit score');
+        if (statusEl) statusEl.textContent = 'Score not saved.';
       } finally {
         isSubmitting = false;
-        submitBtn.disabled = false;
       }
     }
 
@@ -1847,6 +2009,10 @@
     });
 
     document.getElementById('btn-start-game').addEventListener('click', () => {
+      // iOS: unlock audio synchronously inside this tap. startRound() resumes
+      // again, but only after `await fetch(midiUrl)` — by then the gesture
+      // window is gone and iOS can refuse to start audio. Kick it here too.
+      player.resume();
       const username = document.getElementById('username-input').value.trim();
       if (username) {
         state.playerName = username;
@@ -1864,7 +2030,7 @@
     });
 
     // Typing animation for username placeholder
-    const exampleNames = ['Vacilator', 'BenitoFan', 'Juan', 'Jesus', 'Greg999'];
+    const exampleNames = ['DembowKing9', 'BenitoFan', 'Juan', 'Jesus', 'Greg999'];
     let currentNameIndex = 0;
     let currentCharIndex = 0;
     let isTyping = true;
@@ -1921,6 +2087,7 @@
     // LISTEN MODE - only available after playing a game
     btnListen.addEventListener('click', () => {
       if (state.hasPlayedGame) {
+        track('listen_mode_opened');
         setupListenMode();
         showScreen('listen');
       } else {
@@ -1939,11 +2106,13 @@
     });
 
     document.getElementById('btn-next').addEventListener('click', () => {
+      stopResultLoop();
       player.stop();
       startRound(state.round + 1);
     });
 
     document.getElementById('btn-exit-result').addEventListener('click', () => {
+      stopResultLoop();
       player.stop();
       if (timerInterval) clearInterval(timerInterval);
       if (state.snippetTimeout) clearTimeout(state.snippetTimeout);
@@ -1951,22 +2120,32 @@
       showScreen('home');
     });
 
-    document.getElementById('btn-submit-score').addEventListener('click', submitScore);
     document.getElementById('btn-rank-close').addEventListener('click', () => {
       document.getElementById('rank-modal').classList.remove('active');
       loadFullLeaderboard();
       showScreen('leaderboard');
     });
-    document.getElementById('btn-play-again').addEventListener('click', startGame);
+    document.getElementById('btn-play-again').addEventListener('click', () => {
+      track('game_restarted', { player: state.playerName, previous_score: state.score });
+      startGame();
+    });
     document.getElementById('btn-view-lb').addEventListener('click', () => {
+      track('leaderboard_viewed', { source: 'gameover' });
       loadFullLeaderboard();
       showScreen('leaderboard');
     });
 
     document.getElementById('btn-lb-back').addEventListener('click', () => showScreen('home'));
-    document.getElementById('btn-lb-play').addEventListener('click', startGame);
+    document.getElementById('btn-lb-play').addEventListener('click', () => {
+      track('game_restarted', { player: state.playerName, source: 'leaderboard' });
+      startGame();
+    });
 
     document.getElementById('btn-listen-back').addEventListener('click', () => {
+      if (listenSongTitle && listenSongStart) {
+        track('song_listened', { song: listenSongTitle, duration_s: Math.round((Date.now() - listenSongStart) / 1000) });
+        listenSongTitle = null; listenSongStart = null;
+      }
       player.stop();
       showScreen('home');
     });
@@ -1979,6 +2158,7 @@
     });
 
     document.getElementById('btn-exit-game').addEventListener('click', () => {
+      track('game_abandoned', { player: state.playerName, round: state.round + 1, score: state.score, total_rounds: state.shuffled.length });
       player.stop();
       if (timerInterval) clearInterval(timerInterval);
       if (livePointsRafId) cancelAnimationFrame(livePointsRafId);

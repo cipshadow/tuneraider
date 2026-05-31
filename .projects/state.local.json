@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "project": {
+    "initializedAt": "2026-05-29T21:27:54.496Z",
+    "merchantDisplayName": null,
+    "merchantId": "acct_1Sl6bAJfHxaTuDuS",
+    "projectId": "project_61UlvtyywuYshbd7i16TuUYWHWE9O2MadMaDwzEECQGm",
+    "projectName": "tuneraider"
+  },
+  "providers": {
+    "upstash": {
+      "accountRequestId": "facctrq_61Um9yvADrJBkT0lx16TuUYWHWE9O2MadMaDwzEEC7VQ",
+      "configuration": {},
+      "linkedAt": "2026-05-30T12:29:58.011Z",
+      "providerId": "prvdr_61UVa3kQyvSOEnWgd5Naa",
+      "providerName": "Upstash",
+      "redirectUrl": null,
+      "requestedAt": "2026-05-30T12:29:58.011Z",
+      "status": "complete"
+    },
+    "vercel": {
+      "accountRequestId": "facctrq_61Ulwu9QcpRSQVWG016TuUYWHWE9O2MadMaDwzEECDnU",
+      "configuration": {},
+      "linkedAt": "2026-05-29T22:32:11.372Z",
+      "providerId": "prvdr_61ULUAr4zlQgZkvXY5LsG",
+      "providerName": "Vercel",
+      "redirectUrl": null,
+      "requestedAt": "2026-05-29T22:32:11.371Z",
+      "status": "complete"
+    }
+  },
+  "resources": {
+    "upstash-redis": {
+      "configuration": {
+        "name": "tuneraider"
+      },
+      "createdAt": "2026-05-30T12:30:03.314Z",
+      "lastRevealedAt": "2026-05-30T12:30:04.386Z",
+      "lastStatus": "complete",
+      "name": "upstash-redis",
+      "providerId": "prvdr_61UVa3kQyvSOEnWgd5Naa",
+      "providerName": "Upstash",
+      "resourceId": "fres_61Um9yyeyDwdM2sUQ16TuUYWHWE9O2MadMaDwzEECKCW",
+      "serviceId": "redis"
+    },
+    "vercel-project": {
+      "configuration": {
+        "name": "tuneraider"
+      },
+      "createdAt": "2026-05-29T21:28:11.307Z",
+      "lastRevealedAt": "2026-05-30T13:52:53.409Z",
+      "lastStatus": "complete",
+      "name": "vercel-project",
+      "providerId": "prvdr_61ULUAr4zlQgZkvXY5LsG",
+      "providerName": "Vercel",
+      "resourceId": "fres_61UlvuDMYbMGeZeXN16TuUYWHWE9O2MadMaDwzEECBpA",
+      "serviceId": "project"
+    }
+  }
+}

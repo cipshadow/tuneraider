@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "providers": {
+    "upstash": {
+      "name": "Upstash"
+    },
+    "vercel": {
+      "name": "Vercel"
+    }
+  },
+  "resources": {
+    "upstash-redis": {
+      "name": "upstash-redis",
+      "providerName": "Upstash",
+      "serviceId": "redis"
+    },
+    "vercel-project": {
+      "name": "vercel-project",
+      "providerName": "Vercel",
+      "serviceId": "project"
+    }
+  }
+}

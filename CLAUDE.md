@@ -1,129 +1,116 @@
-# TUNERAIDER — Game Boy Quiz
+# TUNERAIDERZ — Claude working context
 
-**GitHub**: https://github.com/cipshadow/tuneraider  
-**Live**: [localhost:3000](http://localhost:3000)  
-**Creator**: cipshadow  
-
-## Project Overview
-
-A **dexterity-based music quiz game** that converts Bad Bunny MIDI files into Game Boy 8-bit audio in the browser. Players identify songs by ear, earning points based on speed. Global leaderboard powered by Redis.
-
-## Tech Stack
-
-- **Frontend**: Vite (TypeScript), v2.html (Game Boy player)
-- **Synthesis**: `src-v2/core/GameBoyPlayer.ts` — 8-channel APU (4 pulse, 2 wave, 2 noise)
-- **Backend**: Express (Node.ts), Redis/Vercel KV leaderboard
-- **Audio**: Web Audio API, @tonejs/midi parsing
-- **Design**: Press Start 2P font, Game Boy palette (green #9bbc0f, dark #0f380f)
-
-## Game Mechanics
-
-1. **Arcade Button Panel** (2×3 grid)
-   - 6 random buttons from 9-song library selected per round
-   - Buttons **swap positions** continuously with staggered animations
-   - Players click the correct song button
-
-2. **Scoring**
-   - Speed-based: `points = Math.max(0, 1000 * (1 - elapsed/30))`
-   - Max 1000 pts at 1 second
-   - 0 pts if no selection by 30s or wrong answer
-   - 9 rounds (9 songs) = max 9000 pts
-
-3. **Features**
-   - Volume control (top-right, 0-100%)
-   - Global leaderboard (Redis/Vercel KV)
-   - Listen mode (browse all songs anytime)
-   - Local dev fallback (in-memory storage)
-
-## Library (9 Bad Bunny Tracks)
-
-All full-length MIDIs in `/public/midi/`:
-1. DtMF (1:23)
-2. Tití Me Preguntó (1:08)
-3. Callaíta (3:30)
-4. Mónaco (4:06)
-5. Amorfoda (2:22)
-6. Mía ft. Drake (song)
-7. Moscow Mule (song)
-8. Baile Inolvidable (song)
-9. Efecto (song)
-
-See `MIDI_CREDITS.md` for attribution.
-
-## Dev Setup
-
-```bash
-npm install
-npm run dev              # Vite on :3000
-npm run dev:backend     # Backend on :3001 (in server/)
-npm run build           # Production build
-```
-
-Backend uses Vite proxy: `/api/*` → localhost:3001
-
-## File Structure
-
-```
-.
-├── index.html             # Quiz game (home)
-├── v2.html                # Gallery/listen mode
-├── src-v2/                # v2 synthesis engine
-│   ├── core/GameBoyPlayer.ts
-│   ├── audio/apu/APU.ts   # 8-channel hardware sim
-│   └── data/songs.ts      # Curated library
-├── server/src/
-│   ├── server.ts          # Express app
-│   └── src/               # MIDI parsing, search adapters
-├── public/midi/           # Local MIDI files
-└── MIDI_CREDITS.md        # Attribution
-
-```
-
-## Design System (Game Boy Palette)
-
-```css
---bg-dark: #0f380f          /* deep green */
---bg-panel: #306230         /* medium green */
---gb-green: #9bbc0f         /* bright green (primary text) */
---gb-light-green: #8bac0f   /* dim green (labels) */
---gb-cream: #e0f8d0         /* light off-white */
-```
-
-Scanlines overlay: `repeating-linear-gradient(transparent 0px, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)`
-
-## Guidelines
-
-- **Game Boy aesthetic first**: Pixel font, retro colors, scanlines, blinking text
-- **Dexterity challenge**: Button animations must be unpredictable and fluid
-- **Replayability**: All 9 songs appear in every game; no elimination
-- **Responsive**: Works on desktop and mobile (game buttons are large tap targets)
-- **Accessibility**: Clear scoring rules in UI, no timer surprises
-- **Sound design**: Authentic v2 synthesis; volume control always visible
-
-## Deployment
-
-To Vercel:
-1. Push to `github.com/cipshadow/tuneraider`
-2. Connect Vercel to GitHub
-3. Set env: `REDIS_URL` (or leave empty for in-memory fallback)
-4. Vite frontend builds to `dist/`; backend at `/api/*`
-
-## Recent Work
-
-- ✅ 9-song library (full-length MIDIs)
-- ✅ Arcade button panel with swapping animation
-- ✅ Volume control integration
-- ✅ Global leaderboard (Redis + local fallback)
-- ✅ Game Boy v2 synthesis engine integration
-- ✅ MIDI attribution credits
-- 🎨 Next: Claude Design for visual improvements
-
-## Known Issues / TODOs
-
-- Mobile button sizing could be tweaked for thumb comfort
-- Leaderboard name length validation (20 chars)
-- Potential for difficulty levels (snippet length, button count)
+**Live:** https://www.tuneraiderz.com  
+**Vercel project:** https://vercel.com/cipblujdea95-gmailcoms-projects/tuneraider  
+**GitHub:** https://github.com/cipshadow/tuneraider  
+**Creator:** cipshadow
 
 ---
 
-**Status**: MVP complete, ready for design polish and Vercel deploy.
+## What it is
+
+Bad Bunny songs re-synthesised as 8-bit Game Boy audio in the browser. Players identify the song from an orbiting arcade button panel. Points scale with speed. Global leaderboard.
+
+---
+
+## How to deploy
+
+```bash
+cd /Users/cip/personal_vibes/tuneraider
+vercel --prod --yes   # uses personal auth + .vercel/project.json
+```
+
+Do NOT use the Stripe-vended `VERCEL_TOKEN` — it expires frequently. Personal `vercel` auth is stable.
+
+---
+
+## Dev setup
+
+```bash
+npm install
+npm run dev              # Vite frontend on :3000
+npm run dev:backend      # Express backend on :3001 (in server/)
+```
+
+Frontend proxies `/api/*` → `localhost:3001` via Vite.
+
+---
+
+## Key files
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Entire game — all screens, game logic, inline JS |
+| `src-v2/core/GameBoyPlayer.ts` | 8-channel APU synthesis engine |
+| `src-v2/audio/apu/APU.ts` | WebAudio APU; exposes `getAnalyserNode()` for visualisers |
+| `src-v2/data/songs.ts` | Song library (title, midiUrl, artist) |
+| `src-v2/data/songs-normalization.ts` | Per-song volume gains (formula: `min(35/avgVel, 1.5) * ~1.4`) |
+| `src-v2/tuneraider.js` | UI helpers: `initDiscoGrid`, `initVUMeter`, `fireCorrect`, `fireWrong` |
+| `src-v2/analytics.ts` | PostHog wrapper (`initAnalytics`, `track`) |
+| `src-v2/audio/sfx.ts` | Game SFX: `playCoin()` correct, `playError()` wrong/timeout |
+| `server/src/server.ts` | Express: `/api/scores` leaderboard, `/api/migrate-scores-add10k` |
+| `vite.config.ts` | Injects `__POSTHOG_KEY__`/`__POSTHOG_HOST__` from root `.env` |
+
+---
+
+## Scoring
+
+- **Starting score:** 10000
+- **Correct:** `+max(0, round(1000 * (1 - elapsed/60)))` — up to +1000 at 1s
+- **Wrong:** `round(-(1000 + (elapsed/60)*1000))` — −1000 to −2000
+- **Timeout:** +0
+- Negative final scores are allowed and stored.
+
+---
+
+## Storage (Upstash Redis)
+
+Credentials: `UPSTASH_REST_URL` + `UPSTASH_REST_TOKEN` — set in Vercel env and local `.env`.  
+Server uses direct REST fetch (no SDK) via `upstash(command[])` helper in `server.ts`.  
+Leaderboard key: `leaderboard` (Redis sorted set, score = points, member = `name|||timestamp`).
+
+---
+
+## Analytics (PostHog EU)
+
+**Live dashboard:** https://eu.posthog.com/project/190111/dashboard/715506 (id 715506, "TUNERAIDERZ — Live"): players/day, total players, game funnel, started-vs-completed, engagement bar. All tiles use `filterTestAccounts:true` so they show real players only.
+
+**Project:** https://eu.posthog.com/project/190111 — project **190111** (token `phc_yWEsuKMv…`), org `digitalshelf` (lowercase, `019d9cd4-b16b-…`). This is the live project the deployed site sends to. Ignore the duplicate empty projects (162233 in org `Digitalshelf`, 161373) — provisioning cruft.
+
+Key: `POSTHOG_ANALYTICS_API_KEY` (= `phc_yWEsuKMv…`) in monorepo-root `.env`, build-injected as `__POSTHOG_KEY__`.  
+Ingestion host: `https://eu.i.posthog.com` (the `.i.` host, NOT the dashboard host `eu.posthog.com`).
+
+**Prod build needs the key from Vercel, not the root `.env`** (Vercel builds server-side and can't see the git-ignored root `.env`). Set in Vercel env: `VITE_POSTHOG_KEY` = `phc_yWEsuKMv…`, `VITE_POSTHOG_HOST` = `https://eu.i.posthog.com`. `vite.config.ts` checks `VITE_POSTHOG_KEY` (localEnv) first. Without these, prod ships an empty key and captures nothing.
+
+To pull stats via API: personal key `POSTHOG_ANALYTICS_PERSONAL_API_KEY` (scoped to project 190111 only — list/org endpoints 403, project-scoped endpoints work). Query: `POST https://eu.posthog.com/api/projects/190111/query/` with a `HogQLQuery`.
+
+Events: `first_visit`, `game_started`, `game_completed`, `game_abandoned`, `game_restarted`, `answer_submitted`, `song_previewed`, `song_listened`, `listen_mode_opened`, `score_submitted`, `leaderboard_viewed`.
+
+---
+
+## Audio
+
+- APU master volume: `1.0` (in `GameBoyPlayer.ts` default config)
+- UI default: `90%`
+- Per-song gains in `songs-normalization.ts` — normalised to Efecto as reference (avgVel 50)
+- Songs loop on result screen via `startResultLoop()` (polls `player.isPlaying()` every 1s)
+- Beat-reactive disco grid on result screen via `APU.getAnalyserNode()`
+
+---
+
+## Design rules
+
+- Game Boy palette: `--bg-dark: #0f380f`, `--gb-green: #9bbc0f`, `--gb-cream: #e0f8d0`
+- Font: `Press Start 2P`
+- No emoji in UI — use text labels or unicode
+- Sentence case headings
+- All branding: **TUNERAIDERZ** (with Z)
+
+---
+
+## Infrastructure gotchas
+
+- Stripe Projects Vercel token expires ~every few days. Rotate: `stripe projects rotate vercel-project --non-interactive --yes && stripe projects env --pull --yes`
+- `vercel link` must be run from inside `tuneraider/`, not from `~`
+- `.vercel/project.json` = `{"projectId":"prj_q9Q4n0weErHFS8ePIrirtaVV239Y","orgId":"team_t3kcuVhaKBVV6ZMLqpOr1ntL","projectName":"tuneraider"}`
+- PostHog duplicate resources exist (`posthog-analytics-2`, `posthog-plan`, `posthog-plan-2`) — harmless free-tier duplicates, don't force-remove

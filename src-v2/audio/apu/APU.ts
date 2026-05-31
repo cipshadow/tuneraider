@@ -14,6 +14,7 @@ import { PulseChannel } from './PulseChannel';
 import { WaveChannel } from './WaveChannel';
 import { NoiseChannel } from './NoiseChannel';
 import { GameBoyColorizer, type ColorizerConfig } from '../effects/GameBoyColorizer';
+import { enablePlaybackSession } from '../session';
 import { 
   DEFAULT_V2_CONFIG,
   type ChannelId, 
@@ -75,7 +76,10 @@ export class GameBoyAPU {
   private activeNodes: Set<OscillatorNode | AudioBufferSourceNode> = new Set();
   
   constructor(audioContext?: AudioContext, config?: Partial<V2Config>) {
-    this.audioContext = audioContext || new AudioContext();
+    // Safari (incl. older iOS) only exposes webkitAudioContext. Without this
+    // fallback, `new AudioContext()` throws there and all audio dies.
+    const AC = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
+    this.audioContext = audioContext || new AC();
     this.config = { ...DEFAULT_V2_CONFIG, ...config };
     
     // Create colorizer (but don't use it for now - bypassed)
@@ -168,11 +172,42 @@ export class GameBoyAPU {
   getAudioContext(): AudioContext {
     return this.audioContext;
   }
+
+  private analyserNode: AnalyserNode | null = null;
+
+  /**
+   * Get (or create) an AnalyserNode tapped off the master gain.
+   * Callers can read frequency/time-domain data for visualisations.
+   */
+  getAnalyserNode(): AnalyserNode {
+    if (!this.analyserNode) {
+      this.analyserNode = this.audioContext.createAnalyser();
+      this.analyserNode.fftSize = 256;
+      this.masterGain.connect(this.analyserNode);
+    }
+    return this.analyserNode;
+  }
   
   /**
    * Resume audio context if suspended.
    */
   async resume(): Promise<void> {
+    // Let WebAudio play through the iOS silent switch (must run on a gesture).
+    enablePlaybackSession();
+    // iOS only unlocks the context if a sound is started inside the user
+    // gesture. Fire a 1-sample silent buffer synchronously (before any await,
+    // so the gesture is still "live") to fully unlock playback.
+    if (this.audioContext.state !== 'running') {
+      try {
+        const buffer = this.audioContext.createBuffer(1, 1, this.audioContext.sampleRate);
+        const source = this.audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.audioContext.destination);
+        source.start(0);
+      } catch {
+        // Best-effort unlock — ignore failures.
+      }
+    }
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
     }
@@ -369,7 +404,10 @@ export class GameBoyAPU {
    * Set master volume.
    */
   setMasterVolume(volume: number): void {
-    this.masterGain.gain.value = Math.max(0, Math.min(1, volume));
+    // Allow >1.0 so per-song normalization gains (up to ~2.4x for quiet MIDIs
+    // like Mónaco) can actually amplify. The DynamicsCompressor limiter on the
+    // output catches peaks, so this won't clip. Capped at 3 to bound runaway.
+    this.masterGain.gain.value = Math.max(0, Math.min(3, volume));
     this.config.masterVolume = volume;
   }
   

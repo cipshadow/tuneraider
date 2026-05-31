@@ -1,7 +1,21 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import { resolve } from 'node:path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // PostHog credentials are provisioned by Stripe Projects into the monorepo-root
+  // .env (POSTHOG_ANALYTICS_*). Inject them as build-time constants; the project
+  // API key is a public client-side key, safe to embed. A local VITE_POSTHOG_*
+  // override wins if set.
+  const rootEnv = loadEnv(mode, resolve(__dirname, '..'), '')
+  const localEnv = loadEnv(mode, __dirname, '')
+  const posthogKey = localEnv.VITE_POSTHOG_KEY || rootEnv.POSTHOG_ANALYTICS_API_KEY || ''
+  const posthogHost = localEnv.VITE_POSTHOG_HOST || rootEnv.POSTHOG_ANALYTICS_HOST || ''
+
+  return {
+  define: {
+    __POSTHOG_KEY__: JSON.stringify(posthogKey),
+    __POSTHOG_HOST__: JSON.stringify(posthogHost),
+  },
   server: {
     port: 3000,
     proxy: {
@@ -32,4 +46,5 @@ export default defineConfig({
       },
     },
   },
+  }
 })

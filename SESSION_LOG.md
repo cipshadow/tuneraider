@@ -137,3 +137,161 @@ Continued development of TUNERAIDER Bad Bunny chiptune quiz game. Focused on UI 
 - Verify all answer buttons appear in game mode
 - Ensure music playback triggers correctly
 - Test result and leaderboard screens
+
+## 2026-05-30 — PostHog analytics + game SFX
+- Provisioned PostHog via Stripe Projects (free tier, EU region) into the `personal_vibes` project. Env vars pulled to root-managed `.env`: `POSTHOG_ANALYTICS_PROJECT_API_KEY`, `POSTHOG_ANALYTICS_HOST`, `POSTHOG_ANALYTICS_PROJECT_ID`, `POSTHOG_ANALYTICS_PROJECT_NAME`.
+- Added `src-v2/analytics.ts` (posthog-js init + `track()`), gated on build-injected key (no-op without it).
+- Added `src-v2/audio/sfx.ts`: `playCoin()` (two-note chiptune coin) on correct answer, `playError()` (descending buzz) on wrong answer; WebAudio, no assets.
+- Wired `handleAnswer` (sound + `answer_submitted`), `init` (`initAnalytics` + `game_started` + iOS sfx unlock), `renderGameOver` (`game_completed`/`game_restarted`).
+- `vite.config.ts`: reads PostHog key/host from monorepo-root `.env` via `loadEnv`, injects as `__POSTHOG_KEY__`/`__POSTHOG_HOST__` defines (project API key is public/client-side).
+- `npm i posthog-js`; `vite build` OK, `tsc --noEmit` 0 errors.
+- Note: `stripe config.toml` printed live rk_live_/pk_live_ keys to terminal scrollback during setup — recommended clearing scrollback.
+
+## 2026-05-30 — PostHog analytics + coin/error SFX
+- Provisioned PostHog via Stripe Projects (free plan, EU). Key env var: `POSTHOG_ANALYTICS_API_KEY` (+ `_HOST`) in monorepo-root `.env`.
+- `src-v2/audio/sfx.ts`: `playCoin()` (chiptune coin) on correct, `playError()` (descending buzz) on wrong/timeout. WebAudio, no assets.
+- `src-v2/analytics.ts`: posthog-js init + `track()`, gated on build-injected `__POSTHOG_KEY__`.
+- Wired into real game `index.html` (`selectAnswer` ~L1691): sounds next to `fireCorrect/fireWrong`; `initAnalytics()` at load; `track('answer_submitted', …)`.
+- `vite.config.ts`: `loadEnv` from root `.env` → `__POSTHOG_KEY__`/`__POSTHOG_HOST__` defines (public client key). Preserved proxy + all 9 inputs.
+- `vite build` OK — verified `phc_` key + host present in `dist`.
+- TODO cleanup: duplicate resources from repeated adds — `posthog-analytics-2`, `posthog-plan`, `posthog-plan-2` (remove via `stripe projects remove <resource>`).
+- Process note: large parallel/background batches caused interleaved-output confusion (a false "injection" scare + one bad vite.config overwrite, restored from git). No tampering. Keep batches small.
+
+## 2026-05-30 — Full product session: analytics, UX, infrastructure, branding
+
+### Analytics (PostHog EU, free tier)
+- Provisioned via Stripe Projects. Key: `POSTHOG_ANALYTICS_API_KEY` in monorepo-root `.env`.
+- `src-v2/analytics.ts`: posthog-js init + `track()`, gated on build-injected `__POSTHOG_KEY__`.
+- `vite.config.ts` updated to `loadEnv` from root `.env` and inject `__POSTHOG_KEY__`/`__POSTHOG_HOST__` defines.
+- Events tracked: `first_visit`, `game_started`, `game_completed`, `game_abandoned`, `game_restarted`, `answer_submitted`, `song_previewed`, `song_listened` (with duration), `listen_mode_opened`, `score_submitted`, `leaderboard_viewed`.
+
+### Game SFX
+- `src-v2/audio/sfx.ts`: `playCoin()` (B5→E6 chiptune coin) on correct, `playError()` (descending buzz) on wrong/timeout. WebAudio synthesised, no assets.
+
+### Scoring changes
+- Starting score changed from 0 → **10000** (makes going negative much less likely).
+- Server score floor (`Math.max(0, ...)` + `score < 0` guard) removed — negative scores now allowed.
+- Migration endpoint `POST /api/migrate-scores-add10k` added (one-time use).
+
+### Song looping on result screen
+- Songs now loop continuously on the result screen until NEXT is hit.
+- Root cause: Dákiti is only ~15s — it went silent. Fix: `startResultLoop()` polls `player.isPlaying()` every second and replays `currentMidiBuffer` if stopped.
+
+### Audio volume
+- APU master volume: `0.7` → `1.0`.
+- UI volume default: `70%` → `90%`.
+- Per-song gains scaled up ~40% (relative normalisation preserved). Gains now stored with comment explaining the formula.
+
+### Audio normalization
+- All songs normalized to Efecto's perceived level (avgVel=50). Gains recalculated from MIDI velocity analysis.
+- Moscow Mule was loudest (gain 1.25 despite avg vel 50) — corrected to 1.00.
+
+### Beat-reactive disco grid
+- `initDiscoGrid` in `tuneraider.js` now accepts optional `analyser: AnalyserNode`.
+- `APU.ts` exposes `getAnalyserNode()` — lazy-creates an AnalyserNode tapped off masterGain.
+- Result screen disco grid syncs to real audio: frequency bands → columns, beat transients → full flash.
+
+### Listen mode cleanup
+- Removed disco grid from listen mode (VU meter is enough).
+- "ARCADE VU METER" → "ARCADE METER".
+- Artist name ("Bad Bunny") removed from song cards — title only.
+- Song cards now equal height per row (`align-items: stretch` + `height: 100%`).
+
+### Copy / branding
+- "INSERT COIN" → "VAMOS!" (blinking home banner) + "START GAME" (modal CTA).
+- All UI renamed **TUNERAIDERZ** (was TUNERAIDER).
+- Example username "Vacilator" → "DembowKing9".
+
+### Auto-submit score
+- Removed manual "SUBMIT SCORE" button.
+- Score now auto-submitted at game over; status div shows "Saving score..." → "Rank #N of N".
+- Rank modal pops automatically after save.
+
+### Persistent leaderboard (Upstash Redis)
+- Provisioned `upstash/redis` via Stripe Projects (usage-based, free tier threshold).
+- Server updated: `@vercel/kv` replaced with direct Upstash REST fetch (`upstash()` helper) — removes SDK version incompatibility.
+- `UPSTASH_REST_URL` / `UPSTASH_REST_TOKEN` added to Vercel env vars.
+- Leaderboard now survives all deploys.
+- Seeded 8 plausible scores (MamiWata 4820 … Jesus −620).
+
+### Domain & deployment
+- **tuneraiderz.com** purchased on Namecheap; DNS A record `216.198.79.1` + CNAME `www → cname.vercel-dns.com`.
+- Project transferred to `cipblujdea95-gmailcoms-projects` Vercel team.
+- `vercel link` run from `~` accidentally — `project.json` was at `~/.vercel/`; copied to `tuneraider/.vercel/`.
+- Deploy now uses personal Vercel auth (`vercel --prod --yes`) rather than Stripe-vended token (which expires frequently).
+- Live at: **https://www.tuneraiderz.com** and https://tuneraider.vercel.app.
+
+### Infrastructure notes
+- Stripe Projects Vercel token expires often — rotate with `stripe projects rotate vercel-project --non-interactive --yes` then `stripe projects env --pull --yes`.
+- For future deploys: `cd tuneraider && vercel --prod --yes` (personal auth, `.vercel/project.json` present).
+
+### 2026-05-31 — Mobile readability: How to Play modal + in-game text
+
+**Goal:** Fix mobile usability feedback (user's dad struggled to read the How to Play modal and in-game song titles). Make text larger and more readable on phones.
+
+**What we did:**
+- **How to Play modal — restructured into numbered chapters.** Replaced the four `<p><strong>…</strong><br/>…</p>` blocks with a `.howto-step` layout: a numbered badge (`.howto-num`, inverted dark-on-green chip from the design system's `.sec-num` pattern) + `.howto-title` (bright green) + `.howto-text` (cream body). This gives a real three-level visual hierarchy instead of an inline color swap.
+- **Left-aligned the body text** under each title. It was centered, which is a readability anti-pattern for multi-line pixel-font text. Centering persisted at first because `.modal-content p` (specificity 0,1,1) beat `.howto-text` (0,1,0); fixed by writing the rule as `.modal-content p.howto-text` (0,2,1) across base + both media queries.
+- **Tightened modal to remove scroll:** body 0.68rem desktop / 0.72rem (640px) / 0.74rem (480px), line-height 1.65–1.7, reduced step gaps. Four chapters now fit without scrolling on a phone.
+- **Enlarged in-game song-title text, then decoupled from button size.** First bumped answer-btn font (desktop 0.65→0.72rem, ≤640px 0.50→0.58rem, ≤480px 0.58→0.64rem) and widened buttons to 145px. User then asked to make the buttons *smaller* while keeping the larger text, so reverted footprint: ≤640px max-width 145→125px, padding 0.85rem/0.35rem, min-height 58px; ≤480px max-width 118px, padding 0.6rem/0.3rem, min-height 54px. Font sizes kept large. This shrinks the orbit footprint and removes the overlap risk.
+- Removed an em-dash ("cost you—and" → "cost you, and") per writing-style rules.
+- **Deployed to production** via `vercel --prod --yes` (personal auth). Live at https://www.tuneraiderz.com. Deployment ID `dpl_5UmYQWCSy426opjKg88u7YvZhYab`, readyState READY. Note: deploy shipped the built `dist/` which bundles the ~20 uncommitted carryover files too — production is ahead of the committed repo.
+
+**Key decisions & trade-offs:**
+- **Numbered-badge chapters over bold/color-only headers.** Earlier attempts (Haiku) just swapped header color; in the Press Start 2P pixel font, bold and same-size color swaps read as identical. The inverted numbered chip is the design system's own pattern for section markers and gives unmistakable separation. **Why:** strongest "chapter vs sentence" distinction the user asked for.
+- **Cream body / green title, not the reverse.** Cream (#e0f8d0) has the highest contrast on the #306230 panel, so the long explanatory text (what the dad reads most) is maximally legible; the short title can afford the slightly lower-contrast green as an accent.
+- **Smaller buttons + larger text (decoupled).** User wanted both: compact orbit footprint AND readable titles. Shrank max-width/padding while keeping the enlarged font. **Trade-off:** bigger text in a smaller box means longer titles wrap onto more lines; `min-height` + `word-wrap: break-word` absorb it, but a long title (e.g. "Moscow Mule") should be eyeballed on a real phone.
+
+**Pending:**
+- Verify on a real phone that long song titles wrap cleanly in the smaller buttons (≤480px max-width 118px). If a title looks cramped, drop font a hair or widen slightly — do NOT go back to 145px (caused orbit overlap).
+- Repo does not match production: today's `index.html` plus ~20 carryover files from the 2026-05-30 session are uncommitted but live. User has not asked to commit. Offer again next session.
+
+**Files involved:**
+- `/Users/cip/personal_vibes/tuneraider/index.html` — only file changed this session (modal CSS + HTML, answer-btn sizing across 3 breakpoints)
+
+**How to continue:** Changes are deployed and live at https://www.tuneraiderz.com (NOT committed to git — repo is behind production). The modal step styles live in the `.howto-*` CSS rules; answer-btn mobile overrides are in the `@media (max-width: 640px)` and `(max-width: 480px)` blocks. To redeploy after edits: `npm run build && vercel --prod --yes`. If asked to sync the repo, `git add index.html` (and optionally the carryover files) and commit.
+
+### 2026-05-31 — PostHog fixed in production (was silently dead)
+
+**Goal:** Pre-Instagram launch check — confirm analytics works.
+
+**Found:** PostHog had **never worked in production**. Deployed bundle (`main-DZYDsaZQ.js`) initialized posthog-js with an empty `__POSTHOG_KEY__` → `initAnalytics()` hit its `if (!KEY) return` guard → zero events captured. Root cause: `vercel.json` uses `@vercel/static-build` so Vercel runs `npm run build` server-side; `vite.config.ts` sourced the key from the monorepo-root `.env` (`POSTHOG_ANALYTICS_API_KEY`), which is git-ignored and absent from deployed source. `vercel env ls` confirmed only Upstash vars were set, no PostHog. Local `dist` had the key (BrJNbm2a) but that build was never what Vercel served. The 05-30 "verified key in dist" note was the local build, not prod.
+
+**Fix:**
+- Added Vercel production env vars: `VITE_POSTHOG_KEY` (= root `.env` `POSTHOG_ANALYTICS_API_KEY`, `phc_yWEs…`) and `VITE_POSTHOG_HOST` = `https://eu.i.posthog.com`. `vite.config.ts` checks `VITE_POSTHOG_KEY` first (localEnv), so Vercel builds now inject it without the root `.env`.
+- **Important:** root `.env` `POSTHOG_ANALYTICS_HOST` is `https://eu.posthog.com` (the *dashboard* host, wrong for ingestion). Set the Vercel var to the `.i.` ingestion host instead.
+- Redeployed: `vercel --prod --yes` (dpl `dpl_89Jz4N3iLMa8uYoZ4cr5NkjjQu3C`).
+- **Verified live:** www.tuneraiderz.com now serves `main-qAxI4hvR.js` containing `phc_yWEs…` + `eu.i.posthog.com`. PostHog now captures in prod.
+
+**Analytics dashboard:** https://eu.posthog.com (EU cloud). Empty until real traffic arrives.
+
+**Still open before IG share:**
+- Eyeball long song titles ("Moscow Mule") wrapping in the ≤480px buttons on a real phone (dad's readability feedback, carried from prior session).
+- Repo still behind prod (uncommitted carryover + today no code changes — fix was Vercel env only, no file edits).
+
+**Files involved:** none edited — Vercel env + redeploy only.
+
+**How to continue:** PostHog is live; verify events land in https://eu.posthog.com after some real visits. If you want events from your own testing excluded, add an IP/email filter in PostHog. To share on IG: do the real-phone title check first, then post.
+
+### 2026-05-31 — iOS Safari audio fixes (friend reported no sound on iPhone)
+
+**Symptom:** Friend on iPhone Safari, full volume, no audio. User has Android, can't repro.
+
+**Root causes (game uses pure WebAudio APU synthesis, no <audio> elements):**
+1. **iOS silent switch** mutes WebAudio even at full volume — the dominant cause. WebAudio routes through the "ambient" session by default, which the Ring/Silent switch silences.
+2. **Gesture-window loss:** `index.html` startRound() calls `player.resume()` only AFTER `await fetch(midiUrl)` — past the user-gesture window, so iOS can refuse to unlock the context.
+3. **No webkitAudioContext fallback** in `APU.ts` (only `sfx.ts` had it) — `new AudioContext()` throws on iOS < 14.5, killing all audio.
+
+**Fixes:**
+- New `src-v2/audio/session.ts` → `enablePlaybackSession()`: sets `navigator.audioSession.type='playback'` (Safari 16.4+, no-op elsewhere) so WebAudio plays through silent mode. Called from `APU.resume()` and `sfx.unlock()`.
+- `APU.ts` constructor: `window.AudioContext || webkitAudioContext` fallback.
+- `APU.resume()`: fires a 1-sample silent buffer synchronously (before any await) to unlock iOS inside the gesture.
+- `index.html` btn-start-game handler: calls `player.resume()` synchronously on the tap (kicks unlock while gesture is still live), in addition to the later await in startRound.
+- Built + deployed. Verified live: APU chunk `APU-BKdfIuEC.js` contains audioSession/createBuffer/playback; PostHog key `phc_yWEsuKMv` still injected.
+
+**Caveats / pending:**
+- Neither user nor I can test on iOS — needs the friend to retest on the real iPhone (hard-reload Safari first).
+- Silent-switch fix requires iOS 16.4+. On older iOS the silent buffer + resume still help, but the mute switch may still silence WebAudio.
+- `src/utils/audioUnlock.ts` (legacy v1, used by play/models/embed pages only) has a similar but separate unlock; not touched. Live game is index.html → src-v2.
+
+**Files:** `src-v2/audio/session.ts` (new), `src-v2/audio/apu/APU.ts`, `src-v2/audio/sfx.ts`, `index.html`.

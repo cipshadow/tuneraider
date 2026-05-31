@@ -9,9 +9,6 @@ dist/
 build/
 
 # Environment
-.env
-.env.*
-!.env.example
 .env.development.local
 .env.test.local
 .env.production.local
@@ -39,3 +36,11 @@ logs/
 
 # Backend runtime cache (downloaded MIDI files)
 server/cache/
+
+.projects/cache
+.projects/vault
+.projects/state.test.json
+.projects/state.local.test.json
+.env
+.env.*
+!.env.example

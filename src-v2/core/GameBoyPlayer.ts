@@ -37,7 +37,7 @@ export interface GameBoyPlayerConfig extends Partial<V2Config> {
 const DEFAULT_PLAYER_CONFIG: GameBoyPlayerConfig = {
   autoResume: true,
   defaultBPM: 120,
-  masterVolume: 0.7,
+  masterVolume: 1.0,
   enableArranger: false, // OFF by default - too many overlapping notes causes clipping
   arrangerConfig: {},
 };
